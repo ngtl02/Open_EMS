@@ -1,7 +1,7 @@
 package io.openems.edge.meter.schneider.PM2000;
 
-import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.INVERT_IF_TRUE;
-//import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_3;
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_3;
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_3_AND_INVERT_IF_TRUE;
 import static io.openems.edge.common.event.EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE;
 
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -38,7 +38,7 @@ import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
-		name = "Meter.Schneider.PM2000", //
+		name = "Meter.Schneider.PM2000Series", //
 		immediate = true, //
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
@@ -109,52 +109,50 @@ public class MeterSchneiderPM2000Impl extends AbstractOpenemsModbusComponent
 	@Override
 	protected ModbusProtocol defineModbusProtocol() {
 		return new ModbusProtocol(this, //
-				// Currents
+				// Currents (A -> mA)
 				new FC3ReadRegistersTask(3000, Priority.HIGH, //
-						m(ElectricityMeter.ChannelId.CURRENT_L1, new FloatDoublewordElement(3000)),
-						m(ElectricityMeter.ChannelId.CURRENT_L2, new FloatDoublewordElement(3002)),
-						m(ElectricityMeter.ChannelId.CURRENT_L3, new FloatDoublewordElement(3004)),
+						m(ElectricityMeter.ChannelId.CURRENT_L1, new FloatDoublewordElement(3000), SCALE_FACTOR_3),
+						m(ElectricityMeter.ChannelId.CURRENT_L2, new FloatDoublewordElement(3002), SCALE_FACTOR_3),
+						m(ElectricityMeter.ChannelId.CURRENT_L3, new FloatDoublewordElement(3004), SCALE_FACTOR_3),
 						new DummyRegisterElement(3005, 3009),
-						m(ElectricityMeter.ChannelId.CURRENT, new FloatDoublewordElement(3010))),
+						m(ElectricityMeter.ChannelId.CURRENT, new FloatDoublewordElement(3010), SCALE_FACTOR_3)),
 
-				// Voltages
+				// Voltages (V -> mV)
 				new FC3ReadRegistersTask(3028, Priority.HIGH, //
-						m(ElectricityMeter.ChannelId.VOLTAGE_L1, new FloatDoublewordElement(3028)),
-						m(ElectricityMeter.ChannelId.VOLTAGE_L2, new FloatDoublewordElement(3030)),
-						m(ElectricityMeter.ChannelId.VOLTAGE_L3, new FloatDoublewordElement(3032)),
+						m(ElectricityMeter.ChannelId.VOLTAGE_L1, new FloatDoublewordElement(3028), SCALE_FACTOR_3),
+						m(ElectricityMeter.ChannelId.VOLTAGE_L2, new FloatDoublewordElement(3030), SCALE_FACTOR_3),
+						m(ElectricityMeter.ChannelId.VOLTAGE_L3, new FloatDoublewordElement(3032), SCALE_FACTOR_3),
 						new DummyRegisterElement(3034, 3035),
-						m(ElectricityMeter.ChannelId.VOLTAGE, new FloatDoublewordElement(3036))),
-				// Power values
+						m(ElectricityMeter.ChannelId.VOLTAGE, new FloatDoublewordElement(3036), SCALE_FACTOR_3)),
+				// Power values (kW -> W, kVar -> Var, kVA -> VA)
 				new FC3ReadRegistersTask(3054, Priority.HIGH, //
 						m(ElectricityMeter.ChannelId.ACTIVE_POWER_L1, new FloatDoublewordElement(3054),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.ACTIVE_POWER_L2, new FloatDoublewordElement(3056),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.ACTIVE_POWER_L3, new FloatDoublewordElement(3058),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.ACTIVE_POWER, new FloatDoublewordElement(3060),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.REACTIVE_POWER_L1, new FloatDoublewordElement(3062),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.REACTIVE_POWER_L2, new FloatDoublewordElement(3064),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.REACTIVE_POWER_L3, new FloatDoublewordElement(3066),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.REACTIVE_POWER, new FloatDoublewordElement(3068),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.APPARENT_POWER_L1, new FloatDoublewordElement(3070),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.APPARENT_POWER_L2, new FloatDoublewordElement(3072),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.APPARENT_POWER_L3, new FloatDoublewordElement(3074),
-								INVERT_IF_TRUE(this.invert)),
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert)),
 						m(ElectricityMeter.ChannelId.APPARENT_POWER, new FloatDoublewordElement(3076),
-								INVERT_IF_TRUE(this.invert))),
-				// new DummyRegisterElement(0x1318, 0x131F), //
-				// new DummyRegisterElement(0x1326, 0x1327), //
-				// Frequency
+								SCALE_FACTOR_3_AND_INVERT_IF_TRUE(this.invert))),
+				// Frequency (Hz -> mHz)
 				new FC3ReadRegistersTask(3110, Priority.HIGH, //
-						m(ElectricityMeter.ChannelId.FREQUENCY, new FloatDoublewordElement(0x0012)))
+						m(ElectricityMeter.ChannelId.FREQUENCY, new FloatDoublewordElement(3110), SCALE_FACTOR_3))
 		//
 		);
 
@@ -164,17 +162,17 @@ public class MeterSchneiderPM2000Impl extends AbstractOpenemsModbusComponent
 	 * Calculate the Energy values from ActivePower.
 	 */
 	private void calculateEnergy() {
-		final Integer activePower = this.getActivePower().get(); // W (Integer)
+		// Values are already in W after SCALE_FACTOR_3 conversion
+		final Integer activePower = this.getActivePower().get();
 		if (activePower == null) {
 			this.calculateProductionEnergy.update(null);
 			this.calculateConsumptionEnergy.update(null);
 		} else if (activePower >= 0) {
-			// Convert from kW to W for energy calculation
-			this.calculateProductionEnergy.update(activePower * 1000); // Integer W
+			this.calculateProductionEnergy.update(activePower);
 			this.calculateConsumptionEnergy.update(0);
 		} else {
 			this.calculateProductionEnergy.update(0);
-			this.calculateConsumptionEnergy.update(-activePower * 1000); // Integer W
+			this.calculateConsumptionEnergy.update(-activePower);
 		}
 	}
 
