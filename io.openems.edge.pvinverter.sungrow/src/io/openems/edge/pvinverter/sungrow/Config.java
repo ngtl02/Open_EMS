@@ -4,7 +4,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(//
-		name = "io.openems.edge.pvinverter.sungrow", //
+		name = "Inverter Sungrow Hybrid", //
 		description = "")
 @interface Config {
 

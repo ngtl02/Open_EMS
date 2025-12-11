@@ -223,7 +223,8 @@
 	bnd.identity;id='io.openems.edge.pvinverter.huawei',\
 	bnd.identity;id='io.openems.edge.pvinverter.sma',\
 	bnd.identity;id='io.openems.edge.pvinverter.sungrow',\
-	bnd.identity;id='io.openems.edge.pvinverter.solis'
+	bnd.identity;id='io.openems.edge.pvinverter.solis',\
+	bnd.identity;id='io.openems.edge.network.manager'
 -runbundles: \
 	Java-WebSocket;version='[1.6.0,1.6.1)',\
 	bcpkix;version='[1.83.0,1.83.1)',\
@@ -501,4 +502,5 @@
 	io.openems.edge.pvinverter.huawei;version=snapshot,\
 	io.openems.edge.pvinverter.sma;version=snapshot,\
 	io.openems.edge.pvinverter.solis;version=snapshot,\
-	io.openems.edge.pvinverter.sungrow;version=snapshot
+	io.openems.edge.pvinverter.sungrow;version=snapshot,\
+	io.openems.edge.network.manager;version=snapshot

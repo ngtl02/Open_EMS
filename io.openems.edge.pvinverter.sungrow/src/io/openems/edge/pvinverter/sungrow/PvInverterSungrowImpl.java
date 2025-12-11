@@ -139,7 +139,7 @@ public class PvInverterSungrowImpl extends AbstractOpenemsModbusComponent
 								new SignedDoublewordElement(5004), SCALE_FACTOR_3),
 						new DummyRegisterElement(5006, 5007),
 						m(PvInverterSungrow.ChannelId.TEMPERATURE,
-								new SignedDoublewordElement(5008), SCALE_FACTOR_1),
+								new SignedWordElement(5008), SCALE_FACTOR_1),
 						new DummyRegisterElement(5009, 5010),
 						m(PvInverterSungrow.ChannelId.DC1_AMPERE,
 								new UnsignedWordElement(5011), SCALE_FACTOR_2),

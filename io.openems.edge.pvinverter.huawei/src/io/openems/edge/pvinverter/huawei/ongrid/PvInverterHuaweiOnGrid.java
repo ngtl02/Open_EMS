@@ -141,9 +141,11 @@ public interface PvInverterHuaweiOnGrid
 				.unit(Unit.MILLIAMPERE)
 				.persistencePriority(PersistencePriority.HIGH)),
 
-		Peak_Active_Power(Doc.of(OpenemsType.INTEGER)
+		PEAK_ACTIVE_POWER(Doc.of(OpenemsType.INTEGER)
 				.unit(Unit.KILOWATT)),
-		Inv_Eff(Doc.of(OpenemsType.INTEGER)
+		PF(Doc.of(OpenemsType.INTEGER)),
+				.unit(Unit.PERCENT),
+		INV_EFF(Doc.of(OpenemsType.INTEGER)
 				.unit(Unit.PERCENT)),
 		TEMPERATURE(Doc.of(OpenemsType.INTEGER)
 				.unit(Unit.DEGREE_CELSIUS)),

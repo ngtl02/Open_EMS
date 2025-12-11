@@ -68,7 +68,8 @@ public class PvInverterSolisOnGridImpl extends AbstractOpenemsModbusComponent
 
 	private final SetPvLimitHandler setPvLimitHandler = new SetPvLimitHandler(this,
 			ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT);
-	private final SetReactivePowerLimitHandler setReactivePowerLimitHandler = new SetReactivePowerLimitHandler(this);
+	private final SetReactivePowerLimitHandler setReactivePowerLimitHandler = new SetReactivePowerLimitHandler(this,
+			ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
 	private final CalculateEnergyFromPower calculateProductionEnergy = new CalculateEnergyFromPower(this,
 			ElectricityMeter.ChannelId.ACTIVE_PRODUCTION_ENERGY);
 
@@ -190,9 +191,9 @@ public class PvInverterSolisOnGridImpl extends AbstractOpenemsModbusComponent
 				new FC6WriteRegisterTask(3071, //
 						m(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL_Q, new UnsignedWordElement(3071))),
 				new FC16WriteRegistersTask(3081,
-						m(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT, new UnsignedWordElement(3081)),
+						m(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT, new SignedWordElement(3081)),
 						new DummyRegisterElement(3082, 3082),
-						m(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT, new UnsignedWordElement(3083))));
+						m(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT, new SignedWordElement(3083))));
 	}
 
 	@Override

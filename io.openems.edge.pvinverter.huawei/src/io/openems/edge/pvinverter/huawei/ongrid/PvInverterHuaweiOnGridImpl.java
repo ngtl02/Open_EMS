@@ -229,7 +229,7 @@ public class PvInverterHuaweiOnGridImpl extends AbstractOpenemsModbusComponent
 						m(ElectricityMeter.ChannelId.FREQUENCY,
 								new UnsignedWordElement(32085), SCALE_FACTOR_1),
 						m(PvInverterHuaweiHybrid.ChannelId.PF,
-								new UnsignedWordElement(32086), SCALE_FACTOR_MINUS_1),
+								new UnsignedWordElement(32086), SCALE_FACTOR_1),
 						m(PvInverterHuaweiHybrid.ChannelId.TEMPERATURE,
 								new SignedWordElement(32087), SCALE_FACTOR_MINUS_1)),
 				new FC16WriteRegistersTask(40120, //
@@ -246,8 +246,9 @@ public class PvInverterHuaweiOnGridImpl extends AbstractOpenemsModbusComponent
 						// UnsignedWordElement(43132)),
 						m(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT,
 								new UnsignedDoublewordElement(40120).wordOrder(WordOrder.MSWLSW)),
+						new DummyRegisterElement(40122, 40128),
 						m(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT,
-								new UnsignedDoublewordElement(40122).wordOrder(WordOrder.MSWLSW))),
+								new UnsignedDoublewordElement(40129).wordOrder(WordOrder.MSWLSW))),
 				new FC16WriteRegistersTask(40126, //
 						// m(ManagedSymmetricPvInverter.ChannelId.MAX_CHARGE_SOC, new
 						// UnsignedWordElement(43010)),

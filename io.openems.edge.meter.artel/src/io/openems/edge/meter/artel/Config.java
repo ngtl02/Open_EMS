@@ -6,7 +6,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import io.openems.common.types.MeterType;
 
 @ObjectClassDefinition(//
-		name = "io.openems.edge.meter.artel", //
+		name = "Meter Artel MDM3100", //
 		description = "Meter Artel MDM3100")
 @interface Config {
 
@@ -23,7 +23,7 @@ import io.openems.common.types.MeterType;
 	MeterType type() default MeterType.GRID;
 
 	@AttributeDefinition(name = "Modbus-ID", description = "Id of the modbus bridge")
-	String modbus_id();
+	String modbus_id() default "modbus0";
 
 	@AttributeDefinition(name = "Modbus Unit-ID", description = "The Unit-ID of the Modbus device")
 	int modbusUnitId();
