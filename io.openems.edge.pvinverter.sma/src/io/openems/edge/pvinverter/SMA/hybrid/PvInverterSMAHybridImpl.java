@@ -195,6 +195,7 @@ public class PvInverterSMAHybridImpl extends AbstractOpenemsModbusComponent
 						new DummyRegisterElement(30975, 30982),
 						m(PvInverterSMAHybrid.ChannelId.DC_TOTAL,
 								new UnsignedDoublewordElement(30983).wordOrder(WordOrder.MSWLSW)),
+						new DummyRegisterElement(30985,30988),
 						m(PvInverterSMAHybrid.ChannelId.BATTERY_VOLTAGE_CHARGE,
 								new UnsignedDoublewordElement(30989).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_MINUS_3),
 						m(PvInverterSMAHybrid.ChannelId.BATTERY_VOLTAGE_DISCHARGE,

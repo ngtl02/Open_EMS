@@ -114,7 +114,7 @@ public class MeterSchneiderPM2000Impl extends AbstractOpenemsModbusComponent
 						m(ElectricityMeter.ChannelId.CURRENT_L1, new FloatDoublewordElement(3000), SCALE_FACTOR_3),
 						m(ElectricityMeter.ChannelId.CURRENT_L2, new FloatDoublewordElement(3002), SCALE_FACTOR_3),
 						m(ElectricityMeter.ChannelId.CURRENT_L3, new FloatDoublewordElement(3004), SCALE_FACTOR_3),
-						new DummyRegisterElement(3005, 3009),
+						new DummyRegisterElement(3006, 3009),
 						m(ElectricityMeter.ChannelId.CURRENT, new FloatDoublewordElement(3010), SCALE_FACTOR_3)),
 
 				// Voltages (V -> mV)

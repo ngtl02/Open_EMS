@@ -105,14 +105,18 @@ public class EvnProcessImage implements ProcessImage {
 
     /**
      * Gets float value for a register address.
-     * Returns the float value if this is a mapped address, or 0 for unmapped.
+     * Returns the scaled float value if this is a mapped address, or 0 for
+     * unmapped.
+     * Scale factor converts internal units (mV, mA, W) to EVN units (V, A, kW).
      */
     private float getFloatValueForAddress(int address) {
         // Find mapping for this address (could be high or low word)
         for (EvnRegisterMapping mapping : this.mappings) {
             int baseAddr = mapping.getAddress();
             if (address == baseAddr || address == baseAddr + 1) {
-                return readChannelValue(mapping.getComponentId(), mapping.getChannelId());
+                float rawValue = readChannelValue(mapping.getComponentId(), mapping.getChannelId());
+                // Apply scale factor: e.g., 0.001 converts W->kW, mV->V, mA->A
+                return rawValue * mapping.getScaleFactor();
             }
         }
         return 0f;
@@ -221,7 +225,7 @@ public class EvnProcessImage implements ProcessImage {
      * Set single register value (FC06).
      * Note: ProcessImage interface doesn't define this, we add it for write
      * support.
-    */
+     */
     public synchronized void setRegister(int ref, Register reg) throws IllegalAddressException {
         int value = reg.getValue();
         handleWriteRegister(ref, value);

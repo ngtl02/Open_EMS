@@ -34,12 +34,20 @@ public class EvnRegisterMapping {
     private final String description;
     private final String channelAddress;
     private final boolean isFloat;
+    private final float scaleFactor;
 
-    private EvnRegisterMapping(int address, String description, String channelAddress, boolean isFloat) {
+    private EvnRegisterMapping(int address, String description, String channelAddress, boolean isFloat,
+            float scaleFactor) {
         this.address = address;
         this.description = description;
         this.channelAddress = channelAddress;
         this.isFloat = isFloat;
+        this.scaleFactor = scaleFactor;
+    }
+
+    // Convenience constructor with default scale factor of 1.0
+    private EvnRegisterMapping(int address, String description, String channelAddress, boolean isFloat) {
+        this(address, description, channelAddress, isFloat, 1.0f);
     }
 
     // ==================== MONITORING REGISTERS (T04 - Input Registers)
@@ -47,38 +55,43 @@ public class EvnRegisterMapping {
 
     // Power Monitoring - addresses 1-8 (from _sum)
     // Sum.ChannelId: GRID_ACTIVE_POWER, PRODUCTION_ACTIVE_POWER, etc.
-    public static final EvnRegisterMapping GRID_ACTIVE_POWER = new EvnRegisterMapping(1, "P-out: Grid Active Power (W)",
-            "_sum/GridActivePower", true);
+    // Scale factor 0.001f converts: W→kW, var→kVar, Wh→kWh
+    public static final EvnRegisterMapping GRID_ACTIVE_POWER = new EvnRegisterMapping(1,
+            "P-out: Grid Active Power (kW)",
+            "_sum/GridActivePower", true, 0.001f);
     public static final EvnRegisterMapping TOTAL_PRODUCTION_POWER = new EvnRegisterMapping(3,
-            "Pinv-out: Total Production Power (W)", "_sum/ProductionActivePower", true);
+            "Pinv-out: Total Production Power (kW)", "_sum/ProductionActivePower", true, 0.001f);
     public static final EvnRegisterMapping PRODUCTION_ENERGY = new EvnRegisterMapping(5,
-            "Ainv: Total Production Energy (Wh)", "_sum/ProductionActiveEnergy", true);
+            "Ainv: Total Production Energy (kWh)", "_sum/ProductionActiveEnergy", true, 0.001f);
     public static final EvnRegisterMapping GRID_REACTIVE_POWER = new EvnRegisterMapping(7,
-            "Q-out: Reactive Power (var)", "_sum/EssReactivePower", true);
+            "Q-out: Reactive Power (kVar)", "_sum/EssReactivePower", true, 0.001f);
 
     // Voltage Monitoring - addresses 9-14 (from meter)
     // ElectricityMeter.ChannelId: VOLTAGE_L1, VOLTAGE_L2, VOLTAGE_L3 (unit: mV)
-    public static final EvnRegisterMapping VOLTAGE_L1 = new EvnRegisterMapping(9, "Ua: Phase Voltage L1 (mV)",
-            DEFAULT_METER_ID + "/VoltageL1", true);
-    public static final EvnRegisterMapping VOLTAGE_L2 = new EvnRegisterMapping(11, "Ub: Phase Voltage L2 (mV)",
-            DEFAULT_METER_ID + "/VoltageL2", true);
-    public static final EvnRegisterMapping VOLTAGE_L3 = new EvnRegisterMapping(13, "Uc: Phase Voltage L3 (mV)",
-            DEFAULT_METER_ID + "/VoltageL3", true);
+    // Scale factor 0.001f converts: mV→V
+    public static final EvnRegisterMapping VOLTAGE_L1 = new EvnRegisterMapping(9, "Ua: Phase Voltage L1 (V)",
+            DEFAULT_METER_ID + "/VoltageL1", true, 0.001f);
+    public static final EvnRegisterMapping VOLTAGE_L2 = new EvnRegisterMapping(11, "Ub: Phase Voltage L2 (V)",
+            DEFAULT_METER_ID + "/VoltageL2", true, 0.001f);
+    public static final EvnRegisterMapping VOLTAGE_L3 = new EvnRegisterMapping(13, "Uc: Phase Voltage L3 (V)",
+            DEFAULT_METER_ID + "/VoltageL3", true, 0.001f);
 
     // Current Monitoring - addresses 15-20 (from meter)
     // ElectricityMeter.ChannelId: CURRENT_L1, CURRENT_L2, CURRENT_L3 (unit: mA)
-    public static final EvnRegisterMapping CURRENT_L1 = new EvnRegisterMapping(15, "Ia: Phase Current L1 (mA)",
-            DEFAULT_METER_ID + "/CurrentL1", true);
-    public static final EvnRegisterMapping CURRENT_L2 = new EvnRegisterMapping(17, "Ib: Phase Current L2 (mA)",
-            DEFAULT_METER_ID + "/CurrentL2", true);
-    public static final EvnRegisterMapping CURRENT_L3 = new EvnRegisterMapping(19, "Ic: Phase Current L3 (mA)",
-            DEFAULT_METER_ID + "/CurrentL3", true);
+    // Scale factor 0.001f converts: mA→A
+    public static final EvnRegisterMapping CURRENT_L1 = new EvnRegisterMapping(15, "Ia: Phase Current L1 (A)",
+            DEFAULT_METER_ID + "/CurrentL1", true, 0.001f);
+    public static final EvnRegisterMapping CURRENT_L2 = new EvnRegisterMapping(17, "Ib: Phase Current L2 (A)",
+            DEFAULT_METER_ID + "/CurrentL2", true, 0.001f);
+    public static final EvnRegisterMapping CURRENT_L3 = new EvnRegisterMapping(19, "Ic: Phase Current L3 (A)",
+            DEFAULT_METER_ID + "/CurrentL3", true, 0.001f);
 
     // Frequency - address 21-22 (from meter)
     // ElectricityMeter.ChannelId: FREQUENCY (unit: Hz, NOT mHz as in some
     // implementations)
+    // Scale factor 0.001f converts: mHz→Hz
     public static final EvnRegisterMapping FREQUENCY = new EvnRegisterMapping(21, "f: Grid Frequency (Hz)",
-            DEFAULT_METER_ID + "/Frequency", true);
+            DEFAULT_METER_ID + "/Frequency", true, 0.001f);
 
     // Power Factor - address 23-24
     // Note: ElectricityMeter doesn't have a direct PowerFactor channel
@@ -106,9 +119,10 @@ public class EvnRegisterMapping {
         int address = INVERTER_START_ADDRESS + (inverterIndex * REGISTERS_PER_INVERTER);
         return new EvnRegisterMapping(
                 address,
-                "PV Inverter " + (inverterIndex + 1) + " Active Power (W)",
+                "PV Inverter " + (inverterIndex + 1) + " Active Power (kW)",
                 DEFAULT_PVINVERTER_PREFIX + inverterIndex + "/ActivePower",
-                true);
+                true,
+                0.001f); // W -> kW
     }
 
     /**
@@ -121,9 +135,10 @@ public class EvnRegisterMapping {
         int address = INVERTER_START_ADDRESS + (inverterIndex * REGISTERS_PER_INVERTER) + 2;
         return new EvnRegisterMapping(
                 address,
-                "PV Inverter " + (inverterIndex + 1) + " Production Energy (Wh)",
+                "PV Inverter " + (inverterIndex + 1) + " Production Energy (kWh)",
                 DEFAULT_PVINVERTER_PREFIX + inverterIndex + "/ActiveProductionEnergy",
-                true);
+                true,
+                0.001f); // Wh -> kWh
     }
 
     // ==================== Helper Methods ====================
@@ -197,6 +212,10 @@ public class EvnRegisterMapping {
 
     public int getRegisterCount() {
         return this.isFloat ? 2 : 1;
+    }
+
+    public float getScaleFactor() {
+        return this.scaleFactor;
     }
 
     public String getComponentId() {

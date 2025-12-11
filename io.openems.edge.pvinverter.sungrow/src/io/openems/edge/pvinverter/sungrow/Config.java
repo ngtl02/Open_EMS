@@ -4,7 +4,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(//
-		name = "Inverter Sungrow Hybrid", //
+		name = "PV-Inverter Sungrow Hybrid", //
 		description = "")
 @interface Config {
 

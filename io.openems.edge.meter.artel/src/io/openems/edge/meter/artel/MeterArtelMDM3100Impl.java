@@ -12,6 +12,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
 import io.openems.common.channel.AccessMode;
@@ -40,6 +41,7 @@ import io.openems.edge.meter.api.ElectricityMeter;
 public class MeterArtelMDM3100Impl extends AbstractOpenemsModbusComponent
 		implements MeterArtelMDM3100, ElectricityMeter, ModbusComponent, OpenemsComponent {
 
+	@Reference
 	private ConfigurationAdmin cm;
 
 	private Config Config;
@@ -112,7 +114,7 @@ public class MeterArtelMDM3100Impl extends AbstractOpenemsModbusComponent
 						m(ElectricityMeter.ChannelId.FREQUENCY, new UnsignedWordElement(0x031C))),
 
 				// ==== ENERGY REGISTERS ====
-				new FC3ReadRegistersTask(0x0418, Priority.LOW,
+				new FC3ReadRegistersTask(0x0500, Priority.LOW,
 						m(ElectricityMeter.ChannelId.ACTIVE_PRODUCTION_ENERGY,
 								new UnsignedDoublewordElement(0x0500).wordOrder(WordOrder.MSWLSW)),
 						m(MeterArtelMDM3100.ChannelId.IMP_ACTIVEPOWER,

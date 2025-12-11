@@ -143,8 +143,8 @@ public interface PvInverterHuaweiOnGrid
 
 		PEAK_ACTIVE_POWER(Doc.of(OpenemsType.INTEGER)
 				.unit(Unit.KILOWATT)),
-		PF(Doc.of(OpenemsType.INTEGER)),
-				.unit(Unit.PERCENT),
+		PF(Doc.of(OpenemsType.INTEGER)
+				.unit(Unit.PERCENT)),
 		INV_EFF(Doc.of(OpenemsType.INTEGER)
 				.unit(Unit.PERCENT)),
 		TEMPERATURE(Doc.of(OpenemsType.INTEGER)
