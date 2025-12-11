@@ -26,7 +26,7 @@ import io.openems.common.types.MeterType;
 	String modbus_id() default "modbus0";
 
 	@AttributeDefinition(name = "Modbus Unit-ID", description = "The Unit-ID of the Modbus device")
-	int modbusUnitId();
+	int modbusUnitId() default 1;
 
 	@AttributeDefinition(name = "Invert", description = "Should the meter values be inverted?")
 	boolean invert() default false;

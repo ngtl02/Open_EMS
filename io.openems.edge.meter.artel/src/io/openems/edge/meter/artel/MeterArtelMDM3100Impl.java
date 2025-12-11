@@ -3,15 +3,13 @@ package io.openems.edge.meter.artel;
 //import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_1;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.INVERT_IF_TRUE;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_2;
-import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_1;
-import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_3;
-import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_3_AND_INVERT_IF_TRUE;
 
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
@@ -61,15 +59,17 @@ public class MeterArtelMDM3100Impl extends AbstractOpenemsModbusComponent
 
 	@Activate
 	private void activate(ComponentContext context, Config Config) throws OpenemsException {
-
+		this.Config = Config;
 		if (super.activate(context, Config.id(), Config.alias(), Config.enabled(), Config.modbusUnitId(), this.cm,
 				"Modbus", Config.modbus_id())) {
 			return;
 		}
 	}
 
+	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
+		this.Config = null;
 	}
 
 	@Override
