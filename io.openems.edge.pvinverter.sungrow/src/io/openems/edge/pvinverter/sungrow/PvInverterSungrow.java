@@ -67,7 +67,7 @@ public interface PvInverterSungrow extends ManagedSymmetricPvInverter, Electrici
 				.unit(Unit.AMPERE)
 				.persistencePriority(PersistencePriority.HIGH)),
 
-		DC_TOTAL(Doc.of(OpenemsType.FLOAT)
+		DC_TOTAL_POWER(Doc.of(OpenemsType.FLOAT)
 				.unit(Unit.WATT)
 				.persistencePriority(PersistencePriority.HIGH)),
 
