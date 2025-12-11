@@ -90,7 +90,7 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
 
             IntegerWriteChannel reactivePowerLimitCh = this.parent
                     .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT_PERCENT);
-            reactivePowerLimitCh.setNextWriteValue(qLimitPerc); // Write percentage (0-100), not absolute var
+            reactivePowerLimitCh.setNextWriteValue(qLimitPerc * 10); // Deye uses 0.1% per unit (gain=10)
 
             IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
             watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());

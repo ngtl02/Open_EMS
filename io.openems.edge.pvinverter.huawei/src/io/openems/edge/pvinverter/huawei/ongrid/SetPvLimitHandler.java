@@ -76,7 +76,7 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 			// Value needs to be set
 			this.parent.logInfo(this.log, "Apply new limit: " + power + " W (" + pLimitPerc + " %)");
 			IntegerWriteChannel pLimitPercCh = this.parent.channel(ChannelId.P_LIMIT_PERC);
-			pLimitPercCh.setNextWriteValue(pLimitPerc);
+			pLimitPercCh.setNextWriteValue(pLimitPerc * 10); // Huawei uses gain=10 for percentage
 
 			EnumWriteChannel pLimitTypeCh = this.parent.channel(ChannelId.P_LIMIT_TYPE);
 			pLimitTypeCh.setNextWriteValue(PLimitType.FIXED_LIMIT);

@@ -83,7 +83,7 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 
 			IntegerWriteChannel activePowerLimitCh = this.parent
 					.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
-			activePowerLimitCh.setNextWriteValue(pLimitPerc); // Write percentage (0-100), not absolute W
+			activePowerLimitCh.setNextWriteValue(pLimitPerc * 10); // Deye uses 0.1% per unit (gain=10)
 
 			IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
 			watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());
