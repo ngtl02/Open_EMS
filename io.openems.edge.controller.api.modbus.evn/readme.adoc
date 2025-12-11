@@ -1,0 +1,100 @@
+= Api Modbus EVN
+
+The OpenEMS Edge Modbus-Slave-API for EVN provides a fixed register mapping for power system monitoring via Modbus/TCP.
+
+== Overview
+
+Unlike the dynamic Modbus API, this EVN-specific controller provides a **fixed register table** (addresses 1-50) designed for EVN monitoring requirements. All float values use IEEE-754 encoding (2 registers per float value).
+
+== Configuration
+
+Configure the controller via OpenEMS UI with the following parameters:
+
+* **Component-ID**: Unique identifier (e.g., `ctrlApiModbusTcpEvn0`)
+* **Port**: Modbus TCP port (default: 502)
+* **Component-IDs**: Components to read data from (e.g., `_sum`, inverter IDs, meter IDs)
+
+== Register Mapping
+
+=== Monitoring Registers (Read-Only, Input Registers T04)
+
+[cols="1,1,4,3", options="header"]
+|===
+|Address |Type |Description |OpenEMS Channel
+
+|1-2 |Float32 |Grid Active Power (P-out) |_sum/GridActivePower
+|3-4 |Float32 |Total Inverter Power (Pinv-out) |_sum/ProductionActivePower
+|5-6 |Float32 |Previous Day Energy (Ainv_D-1) |_sum/ProductionActiveEnergyYesterday
+|7-8 |Float32 |Grid Reactive Power (kVar) |_sum/GridReactivePower
+|9-10 |Float32 |Phase Voltage Ua (V) |_sum/VoltageL1
+|11-12 |Float32 |Phase Voltage Ub (V) |_sum/VoltageL2
+|13-14 |Float32 |Phase Voltage Uc (V) |_sum/VoltageL3
+|15-16 |Float32 |Phase Current Ia (A) |_sum/CurrentL1
+|17-18 |Float32 |Phase Current Ib (A) |_sum/CurrentL2
+|19-20 |Float32 |Phase Current Ic (A) |_sum/CurrentL3
+|21-22 |Float32 |Frequency (Hz) |_sum/Frequency
+|23-24 |Float32 |Power Factor |_sum/CosPhi
+|25-26 |Float32 |Inverter 1 DC Power |inverter0/DcPower
+|27-28 |Float32 |Inverter 1 Daily Energy |inverter0/ActiveProductionEnergyYesterday
+|29-30 |Float32 |Inverter 2 DC Power |inverter1/DcPower
+|31-32 |Float32 |Inverter 2 Daily Energy |inverter1/ActiveProductionEnergyYesterday
+|===
+
+=== Control Registers (Read-Write, Holding Registers T03/T06)
+
+[cols="1,1,4", options="header"]
+|===
+|Address |Type |Description
+
+|11 |Boolean |Enable P-out Control
+|12 |Integer |SetPoint P-out % (0-100)
+|13 |Integer |SetPoint P-out kW
+|12 |Boolean |Enable Q-out Control
+|14 |Integer |SetPoint Q-out % (0-100)
+|15 |Integer |SetPoint Q-out kvar
+|===
+
+== Supported Modbus Functions
+
+* **T01/T05**: Read/Write Coils (for boolean control)
+* **T02**: Read Discrete Inputs
+* **T03/T06**: Read/Write Holding Registers (for integer control)
+* **T04**: Read Input Registers (for monitoring data)
+
+== IEEE-754 Float Encoding
+
+All monitoring values use IEEE-754 32-bit float encoding:
+* Each float value occupies 2 consecutive Modbus registers (16-bit each)
+* Byte order: Big-endian (network byte order)
+* Example: Value at address 1 uses registers 1 and 2
+
+== Example Usage
+
+=== Reading Grid Active Power (Python with pymodbus)
+
+[source,python]
+----
+from pymodbus.client import ModbusTcpClient
+import struct
+
+client = ModbusTcpClient('192.168.1.100', port=502)
+result = client.read_input_registers(address=0, count=2, slave=1)
+
+# Convert 2 registers to IEEE-754 float
+bytes_data = struct.pack('>HH', result.registers[0], result.registers[1])
+grid_power = struct.unpack('>f', bytes_data)[0]
+print(f"Grid Active Power: {grid_power} W")
+----
+
+=== Writing SetPoint P-out in kW
+
+[source,python]
+----
+from pymodbus.client import ModbusTcpClient
+
+client = ModbusTcpClient('192.168.1.100', port=502)
+# Write 5000 kW to address 13
+client.write_register(address=12, value=5000, slave=1)
+----
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.controller.api.modbus.evn[Source Code icon:github[]]

@@ -212,7 +212,18 @@
 	bnd.identity;id='io.openems.edge.timeofusetariff.swisspower',\
 	bnd.identity;id='io.openems.edge.timeofusetariff.tibber',\
 	bnd.identity;id='io.openems.edge.weather.openmeteo',\
-	
+	bnd.identity;id='io.openems.edge.controller.api.modbus.evn',\
+	bnd.identity;id='io.openems.edge.controller.pvinverter.limitbatterysoc',\
+	bnd.identity;id='io.openems.edge.controller.pvinverter.limitreactivepower',\
+	bnd.identity;id='io.openems.edge.meter.artel',\
+	bnd.identity;id='io.openems.edge.meter.edmi',\
+	bnd.identity;id='io.openems.edge.meter.elecnova',\
+	bnd.identity;id='io.openems.edge.meter.schneider',\
+	bnd.identity;id='io.openems.edge.pvinverter.deye',\
+	bnd.identity;id='io.openems.edge.pvinverter.huawei',\
+	bnd.identity;id='io.openems.edge.pvinverter.sma',\
+	bnd.identity;id='io.openems.edge.pvinverter.sungrow',\
+	bnd.identity;id='io.openems.edge.pvinverter.solis'
 -runbundles: \
 	Java-WebSocket;version='[1.6.0,1.6.1)',\
 	bcpkix;version='[1.83.0,1.83.1)',\
@@ -478,4 +489,16 @@
 	org.owasp.encoder;version='[1.4.0,1.4.1)',\
 	reactive-streams;version='[1.0.4,1.0.5)',\
 	rrd4j;version='[3.9.0,3.9.1)',\
-	stax2-api;version='[4.2.2,4.2.3)'
+	stax2-api;version='[4.2.2,4.2.3)',\
+	io.openems.edge.controller.api.modbus.evn;version=snapshot,\
+	io.openems.edge.controller.pvinverter.limitreactivepower;version=snapshot,\
+	io.openems.edge.controller.pvinverter.limitbatterysoc;version=snapshot,\
+	io.openems.edge.meter.artel;version=snapshot,\
+	io.openems.edge.meter.edmi;version=snapshot,\
+	io.openems.edge.meter.elecnova;version=snapshot,\
+	io.openems.edge.meter.schneider;version=snapshot,\
+	io.openems.edge.pvinverter.deye;version=snapshot,\
+	io.openems.edge.pvinverter.huawei;version=snapshot,\
+	io.openems.edge.pvinverter.sma;version=snapshot,\
+	io.openems.edge.pvinverter.solis;version=snapshot,\
+	io.openems.edge.pvinverter.sungrow;version=snapshot

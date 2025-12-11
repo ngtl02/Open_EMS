@@ -85,8 +85,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		ACTIVE_POWER(new IntegerDoc() //
-				.unit(Unit.WATT) //
+		ACTIVE_POWER(new IntegerDoc()//
+				.unit(Unit.WATT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
@@ -98,8 +98,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		ACTIVE_POWER_L1(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.WATT) //
+		ACTIVE_POWER_L1(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.WATT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Active Power L2.
@@ -110,8 +110,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		ACTIVE_POWER_L2(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.WATT) //
+		ACTIVE_POWER_L2(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.WATT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Active Power L3.
@@ -122,8 +122,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		ACTIVE_POWER_L3(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.WATT) //
+		ACTIVE_POWER_L3(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.WATT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Reactive Power.
@@ -133,8 +133,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Unit: {@link Unit#VOLT_AMPERE_REACTIVE}
 		 * </ul>
 		 */
-		REACTIVE_POWER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.VOLT_AMPERE_REACTIVE) //
+		REACTIVE_POWER(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE_REACTIVE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Reactive Power L1.
@@ -144,8 +144,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Unit: {@link Unit#VOLT_AMPERE_REACTIVE}
 		 * </ul>
 		 */
-		REACTIVE_POWER_L1(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.VOLT_AMPERE_REACTIVE) //
+		REACTIVE_POWER_L1(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE_REACTIVE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Reactive Power L2.
@@ -155,8 +155,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Unit: {@link Unit#VOLT_AMPERE_REACTIVE}
 		 * </ul>
 		 */
-		REACTIVE_POWER_L2(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.VOLT_AMPERE_REACTIVE) //
+		REACTIVE_POWER_L2(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE_REACTIVE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Reactive Power L3.
@@ -166,8 +166,52 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Unit: {@link Unit#VOLT_AMPERE_REACTIVE}
 		 * </ul>
 		 */
-		REACTIVE_POWER_L3(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.VOLT_AMPERE_REACTIVE) //
+		REACTIVE_POWER_L3(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE_REACTIVE)//
+				.persistencePriority(PersistencePriority.HIGH)), //
+		/**
+		 * Apparent Power.
+		 *
+		 * <ul>
+		 * <li>Type: {@link OpenemsType#INTEGER}
+		 * <li>Unit: {@link Unit#VOLT_AMPERE}
+		 * </ul>
+		 */
+		APPARENT_POWER(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE)//
+				.persistencePriority(PersistencePriority.HIGH)), //
+		/**
+		 * Apparent Power L1.
+		 *
+		 * <ul>
+		 * <li>Type: {@link OpenemsType#INTEGER}
+		 * <li>Unit: {@link Unit#VOLT_AMPERE}
+		 * </ul>
+		 */
+		APPARENT_POWER_L1(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE)//
+				.persistencePriority(PersistencePriority.HIGH)), //
+		/**
+		 * Apparent Power L2.
+		 *
+		 * <ul>
+		 * <li>Type: {@link OpenemsType#INTEGER}
+		 * <li>Unit: {@link Unit#VOLT_AMPERE}
+		 * </ul>
+		 */
+		APPARENT_POWER_L2(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE)//
+				.persistencePriority(PersistencePriority.HIGH)), //
+		/**
+		 * Apparent Power L3.
+		 *
+		 * <ul>
+		 * <li>Type: {@link OpenemsType#INTEGER}
+		 * <li>Unit: {@link Unit#VOLT_AMPERE}
+		 * </ul>
+		 */
+		APPARENT_POWER_L3(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.VOLT_AMPERE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Voltage.
@@ -178,8 +222,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: only positive values
 		 * </ul>
 		 */
-		VOLTAGE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIVOLT) //
+		VOLTAGE(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIVOLT)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * Voltage L1.
@@ -190,8 +234,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: only positive values
 		 * </ul>
 		 */
-		VOLTAGE_L1(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIVOLT) //
+		VOLTAGE_L1(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIVOLT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Voltage L2.
@@ -202,8 +246,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: only positive values
 		 * </ul>
 		 */
-		VOLTAGE_L2(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIVOLT) //
+		VOLTAGE_L2(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIVOLT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Voltage L3.
@@ -214,8 +258,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: only positive values
 		 * </ul>
 		 */
-		VOLTAGE_L3(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIVOLT) //
+		VOLTAGE_L3(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIVOLT)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Current.
@@ -226,8 +270,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		CURRENT(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
+		CURRENT(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIAMPERE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Current L1.
@@ -238,8 +282,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		CURRENT_L1(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
+		CURRENT_L1(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIAMPERE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Current L2.
@@ -250,8 +294,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		CURRENT_L2(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
+		CURRENT_L2(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIAMPERE)//
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Current L3.
@@ -262,8 +306,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: see {@link ElectricityMeter}
 		 * </ul>
 		 */
-		CURRENT_L3(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
+		CURRENT_L3(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIAMPERE)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * Frequency.
@@ -274,8 +318,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * <li>Range: only positive values
 		 * </ul>
 		 */
-		FREQUENCY(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIHERTZ) //
+		FREQUENCY(Doc.of(OpenemsType.INTEGER)//
+				.unit(Unit.MILLIHERTZ)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * Active Production Energy.
@@ -288,8 +332,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_PRODUCTION_ENERGY(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_PRODUCTION_ENERGY(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * The ActiveProductionEnergy on L1.
@@ -302,8 +346,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_PRODUCTION_ENERGY_L1(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_PRODUCTION_ENERGY_L1(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * The ActiveProductionEnergy on L2.
@@ -316,8 +360,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_PRODUCTION_ENERGY_L2(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_PRODUCTION_ENERGY_L2(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * The ActiveProductionEnergy on L3.
@@ -330,8 +374,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_PRODUCTION_ENERGY_L3(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_PRODUCTION_ENERGY_L3(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * Active Consumption Energy.
@@ -344,8 +388,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_CONSUMPTION_ENERGY(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_CONSUMPTION_ENERGY(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * The ActiveConsumptionEnergy on L1.
@@ -358,8 +402,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_CONSUMPTION_ENERGY_L1(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_CONSUMPTION_ENERGY_L1(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * The ActiveConsumptionEnergy on L2.
@@ -372,8 +416,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_CONSUMPTION_ENERGY_L2(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_CONSUMPTION_ENERGY_L2(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
 		 * The ActiveConsumptionEnergy on L3.
@@ -386,8 +430,8 @@ public interface ElectricityMeter extends OpenemsComponent {
 		 * {@link ElectricityMeter})
 		 * </ul>
 		 */
-		ACTIVE_CONSUMPTION_ENERGY_L3(Doc.of(OpenemsType.LONG) //
-				.unit(Unit.CUMULATED_WATT_HOURS) //
+		ACTIVE_CONSUMPTION_ENERGY_L3(Doc.of(OpenemsType.LONG)//
+				.unit(Unit.CUMULATED_WATT_HOURS)//
 				.persistencePriority(PersistencePriority.HIGH)),; //
 
 		private final Doc doc;
@@ -815,6 +859,161 @@ public interface ElectricityMeter extends OpenemsComponent {
 	 */
 	public default void _setReactivePowerL3(int value) {
 		this.getReactivePowerL3Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#APPARENT_POWER}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getApparentPowerChannel() {
+		return this.channel(ChannelId.APPARENT_POWER);
+	}
+
+	/**
+	 * Gets the Apparent Power in [VA]. See {@link ChannelId#APPARENT_POWER}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getApparentPower() {
+		return this.getApparentPowerChannel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPower(Integer value) {
+		this.getApparentPowerChannel().setNextValue(value);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPower(int value) {
+		this.getApparentPowerChannel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#APPARENT_POWER_L1}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getApparentPowerL1Channel() {
+		return this.channel(ChannelId.APPARENT_POWER_L1);
+	}
+
+	/**
+	 * Gets the Apparent Power on L1 in [VA]. See
+	 * {@link ChannelId#APPARENT_POWER_L1}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getApparentPowerL1() {
+		return this.getApparentPowerL1Channel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER_L1}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPowerL1(Integer value) {
+		this.getApparentPowerL1Channel().setNextValue(value);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER_L1}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPowerL1(int value) {
+		this.getApparentPowerL1Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#APPARENT_POWER_L2}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getApparentPowerL2Channel() {
+		return this.channel(ChannelId.APPARENT_POWER_L2);
+	}
+
+	/**
+	 * Gets the Apparent Power on L2 in [VA]. See
+	 * {@link ChannelId#APPARENT_POWER_L2}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getApparentPowerL2() {
+		return this.getApparentPowerL2Channel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER_L2}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPowerL2(Integer value) {
+		this.getApparentPowerL2Channel().setNextValue(value);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER_L2}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPowerL2(int value) {
+		this.getApparentPowerL2Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#APPARENT_POWER_L3}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getApparentPowerL3Channel() {
+		return this.channel(ChannelId.APPARENT_POWER_L3);
+	}
+
+	/**
+	 * Gets the Apparent Power on L3 in [VA]. See
+	 * {@link ChannelId#APPARENT_POWER_L3}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getApparentPowerL3() {
+		return this.getApparentPowerL3Channel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER_L3}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPowerL3(Integer value) {
+		this.getApparentPowerL3Channel().setNextValue(value);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#APPARENT_POWER_L3}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setApparentPowerL3(int value) {
+		this.getApparentPowerL3Channel().setNextValue(value);
 	}
 
 	/**
