@@ -23,6 +23,8 @@ import io.openems.edge.bridge.modbus.api.AbstractOpenemsModbusComponent;
 import io.openems.edge.bridge.modbus.api.BridgeModbus;
 import io.openems.edge.bridge.modbus.api.ModbusComponent;
 import io.openems.edge.bridge.modbus.api.ModbusProtocol;
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_3;
+
 import io.openems.edge.bridge.modbus.api.element.FloatDoublewordElement;
 import io.openems.edge.bridge.modbus.api.task.FC3ReadRegistersTask;
 import io.openems.edge.common.component.ComponentManager;
@@ -104,33 +106,34 @@ public class MeterElecnovaPD194ZImpl extends AbstractOpenemsModbusComponent
 	@Override
 	protected ModbusProtocol defineModbusProtocol() {
 		return new ModbusProtocol(this, //
-				// Voltages
+				// Voltages (V -> mV)
 				new FC3ReadRegistersTask(0x0006, Priority.HIGH, //
-						m(ElectricityMeter.ChannelId.VOLTAGE_L1, new FloatDoublewordElement(0x0006)),
-						m(ElectricityMeter.ChannelId.VOLTAGE_L2, new FloatDoublewordElement(0x0008)),
-						m(ElectricityMeter.ChannelId.VOLTAGE_L3, new FloatDoublewordElement(0x000A))),
-				// Frequency
+						m(ElectricityMeter.ChannelId.VOLTAGE_L1, new FloatDoublewordElement(0x0006), SCALE_FACTOR_3),
+						m(ElectricityMeter.ChannelId.VOLTAGE_L2, new FloatDoublewordElement(0x0008), SCALE_FACTOR_3),
+						m(ElectricityMeter.ChannelId.VOLTAGE_L3, new FloatDoublewordElement(0x000A), SCALE_FACTOR_3)),
+				// Frequency (mHz - multiply by 1000)
 				new FC3ReadRegistersTask(0x0012, Priority.LOW, //
-						m(ElectricityMeter.ChannelId.FREQUENCY, new FloatDoublewordElement(0x0012))),
+						m(ElectricityMeter.ChannelId.FREQUENCY, new FloatDoublewordElement(0x0012), SCALE_FACTOR_3)),
 
 				// ====== Data Line 1 ======
+				// Current: A -> mA, Power: kW -> W, kVar -> Var, kVA -> VA
 				new FC3ReadRegistersTask(0x0014, Priority.HIGH, //
-						m(MeterElecnovaPD194Z.ChannelId.L1_IA, new FloatDoublewordElement(0x0014)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_IB, new FloatDoublewordElement(0x0016)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_IC, new FloatDoublewordElement(0x0018)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_I, new FloatDoublewordElement(0x001A)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_PA, new FloatDoublewordElement(0x001C)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_PB, new FloatDoublewordElement(0x001E)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_PC, new FloatDoublewordElement(0x0020)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_P, new FloatDoublewordElement(0x0022)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_QA, new FloatDoublewordElement(0x0024)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_QB, new FloatDoublewordElement(0x0026)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_QC, new FloatDoublewordElement(0x0028)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_Q, new FloatDoublewordElement(0x002A)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_SA, new FloatDoublewordElement(0x002C)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_SB, new FloatDoublewordElement(0x002E)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_SC, new FloatDoublewordElement(0x0030)),
-						m(MeterElecnovaPD194Z.ChannelId.L1_S, new FloatDoublewordElement(0x0032)),
+						m(MeterElecnovaPD194Z.ChannelId.L1_IA, new FloatDoublewordElement(0x0014), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_IB, new FloatDoublewordElement(0x0016), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_IC, new FloatDoublewordElement(0x0018), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_I, new FloatDoublewordElement(0x001A), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_PA, new FloatDoublewordElement(0x001C), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_PB, new FloatDoublewordElement(0x001E), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_PC, new FloatDoublewordElement(0x0020), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_P, new FloatDoublewordElement(0x0022), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_QA, new FloatDoublewordElement(0x0024), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_QB, new FloatDoublewordElement(0x0026), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_QC, new FloatDoublewordElement(0x0028), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_Q, new FloatDoublewordElement(0x002A), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_SA, new FloatDoublewordElement(0x002C), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_SB, new FloatDoublewordElement(0x002E), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_SC, new FloatDoublewordElement(0x0030), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L1_S, new FloatDoublewordElement(0x0032), SCALE_FACTOR_3),
 						m(MeterElecnovaPD194Z.ChannelId.L1_PFA, new FloatDoublewordElement(0x0034)),
 						m(MeterElecnovaPD194Z.ChannelId.L1_PFB, new FloatDoublewordElement(0x0036)),
 						m(MeterElecnovaPD194Z.ChannelId.L1_PFC, new FloatDoublewordElement(0x0038)),
@@ -138,22 +141,22 @@ public class MeterElecnovaPD194ZImpl extends AbstractOpenemsModbusComponent
 
 				// ====== Data Line 2 ======
 				new FC3ReadRegistersTask(0x005C, Priority.HIGH, //
-						m(MeterElecnovaPD194Z.ChannelId.L2_IA, new FloatDoublewordElement(0x005C)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_IB, new FloatDoublewordElement(0x005E)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_IC, new FloatDoublewordElement(0x0060)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_I, new FloatDoublewordElement(0x0062)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_PA, new FloatDoublewordElement(0x0064)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_PB, new FloatDoublewordElement(0x0066)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_PC, new FloatDoublewordElement(0x0068)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_P, new FloatDoublewordElement(0x006A)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_QA, new FloatDoublewordElement(0x006C)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_QB, new FloatDoublewordElement(0x006E)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_QC, new FloatDoublewordElement(0x0070)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_Q, new FloatDoublewordElement(0x0072)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_SA, new FloatDoublewordElement(0x0074)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_SB, new FloatDoublewordElement(0x0076)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_SC, new FloatDoublewordElement(0x0078)),
-						m(MeterElecnovaPD194Z.ChannelId.L2_S, new FloatDoublewordElement(0x007A)),
+						m(MeterElecnovaPD194Z.ChannelId.L2_IA, new FloatDoublewordElement(0x005C), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_IB, new FloatDoublewordElement(0x005E), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_IC, new FloatDoublewordElement(0x0060), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_I, new FloatDoublewordElement(0x0062), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_PA, new FloatDoublewordElement(0x0064), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_PB, new FloatDoublewordElement(0x0066), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_PC, new FloatDoublewordElement(0x0068), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_P, new FloatDoublewordElement(0x006A), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_QA, new FloatDoublewordElement(0x006C), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_QB, new FloatDoublewordElement(0x006E), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_QC, new FloatDoublewordElement(0x0070), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_Q, new FloatDoublewordElement(0x0072), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_SA, new FloatDoublewordElement(0x0074), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_SB, new FloatDoublewordElement(0x0076), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_SC, new FloatDoublewordElement(0x0078), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L2_S, new FloatDoublewordElement(0x007A), SCALE_FACTOR_3),
 						m(MeterElecnovaPD194Z.ChannelId.L2_PFA, new FloatDoublewordElement(0x007C)),
 						m(MeterElecnovaPD194Z.ChannelId.L2_PFB, new FloatDoublewordElement(0x007E)),
 						m(MeterElecnovaPD194Z.ChannelId.L2_PFC, new FloatDoublewordElement(0x0080)),
@@ -161,22 +164,22 @@ public class MeterElecnovaPD194ZImpl extends AbstractOpenemsModbusComponent
 
 				// ====== Data Line 3 ======
 				new FC3ReadRegistersTask(0x00A4, Priority.HIGH, //
-						m(MeterElecnovaPD194Z.ChannelId.L3_IA, new FloatDoublewordElement(0x00A4)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_IB, new FloatDoublewordElement(0x00A6)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_IC, new FloatDoublewordElement(0x00A8)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_I, new FloatDoublewordElement(0x00AA)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_PA, new FloatDoublewordElement(0x00AC)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_PB, new FloatDoublewordElement(0x00AE)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_PC, new FloatDoublewordElement(0x00B0)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_P, new FloatDoublewordElement(0x00B2)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_QA, new FloatDoublewordElement(0x00B4)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_QB, new FloatDoublewordElement(0x00B6)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_QC, new FloatDoublewordElement(0x00B8)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_Q, new FloatDoublewordElement(0x00BA)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_SA, new FloatDoublewordElement(0x00BC)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_SB, new FloatDoublewordElement(0x00BE)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_SC, new FloatDoublewordElement(0x00C0)),
-						m(MeterElecnovaPD194Z.ChannelId.L3_S, new FloatDoublewordElement(0x00C2)),
+						m(MeterElecnovaPD194Z.ChannelId.L3_IA, new FloatDoublewordElement(0x00A4), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_IB, new FloatDoublewordElement(0x00A6), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_IC, new FloatDoublewordElement(0x00A8), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_I, new FloatDoublewordElement(0x00AA), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_PA, new FloatDoublewordElement(0x00AC), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_PB, new FloatDoublewordElement(0x00AE), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_PC, new FloatDoublewordElement(0x00B0), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_P, new FloatDoublewordElement(0x00B2), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_QA, new FloatDoublewordElement(0x00B4), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_QB, new FloatDoublewordElement(0x00B6), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_QC, new FloatDoublewordElement(0x00B8), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_Q, new FloatDoublewordElement(0x00BA), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_SA, new FloatDoublewordElement(0x00BC), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_SB, new FloatDoublewordElement(0x00BE), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_SC, new FloatDoublewordElement(0x00C0), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L3_S, new FloatDoublewordElement(0x00C2), SCALE_FACTOR_3),
 						m(MeterElecnovaPD194Z.ChannelId.L3_PFA, new FloatDoublewordElement(0x00C4)),
 						m(MeterElecnovaPD194Z.ChannelId.L3_PFB, new FloatDoublewordElement(0x00C6)),
 						m(MeterElecnovaPD194Z.ChannelId.L3_PFC, new FloatDoublewordElement(0x00C8)),
@@ -184,22 +187,22 @@ public class MeterElecnovaPD194ZImpl extends AbstractOpenemsModbusComponent
 
 				// ====== Data Line 4 ======
 				new FC3ReadRegistersTask(0x00EC, Priority.HIGH, //
-						m(MeterElecnovaPD194Z.ChannelId.L4_IA, new FloatDoublewordElement(0x00EC)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_IB, new FloatDoublewordElement(0x00EE)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_IC, new FloatDoublewordElement(0x00F0)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_I, new FloatDoublewordElement(0x00F2)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_PA, new FloatDoublewordElement(0x00F4)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_PB, new FloatDoublewordElement(0x00F6)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_PC, new FloatDoublewordElement(0x00F8)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_P, new FloatDoublewordElement(0x00FA)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_QA, new FloatDoublewordElement(0x00FC)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_QB, new FloatDoublewordElement(0x00FE)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_QC, new FloatDoublewordElement(0x0100)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_Q, new FloatDoublewordElement(0x0102)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_SA, new FloatDoublewordElement(0x0104)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_SB, new FloatDoublewordElement(0x0106)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_SC, new FloatDoublewordElement(0x0108)),
-						m(MeterElecnovaPD194Z.ChannelId.L4_S, new FloatDoublewordElement(0x010A)),
+						m(MeterElecnovaPD194Z.ChannelId.L4_IA, new FloatDoublewordElement(0x00EC), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_IB, new FloatDoublewordElement(0x00EE), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_IC, new FloatDoublewordElement(0x00F0), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_I, new FloatDoublewordElement(0x00F2), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_PA, new FloatDoublewordElement(0x00F4), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_PB, new FloatDoublewordElement(0x00F6), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_PC, new FloatDoublewordElement(0x00F8), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_P, new FloatDoublewordElement(0x00FA), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_QA, new FloatDoublewordElement(0x00FC), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_QB, new FloatDoublewordElement(0x00FE), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_QC, new FloatDoublewordElement(0x0100), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_Q, new FloatDoublewordElement(0x0102), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_SA, new FloatDoublewordElement(0x0104), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_SB, new FloatDoublewordElement(0x0106), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_SC, new FloatDoublewordElement(0x0108), SCALE_FACTOR_3),
+						m(MeterElecnovaPD194Z.ChannelId.L4_S, new FloatDoublewordElement(0x010A), SCALE_FACTOR_3),
 						m(MeterElecnovaPD194Z.ChannelId.L4_PFA, new FloatDoublewordElement(0x010C)),
 						m(MeterElecnovaPD194Z.ChannelId.L4_PFB, new FloatDoublewordElement(0x010E)),
 						m(MeterElecnovaPD194Z.ChannelId.L4_PFC, new FloatDoublewordElement(0x0110)),
@@ -210,19 +213,17 @@ public class MeterElecnovaPD194ZImpl extends AbstractOpenemsModbusComponent
 	 * Calculate the Energy values from ActivePower.
 	 */
 	private void calculateEnergy() {
-		// Calculate Energy
+		// Calculate Energy - values are already in W after MULTIPLY(1000) conversion
 		final Integer activePower = this.getActivePower().get();
 		if (activePower == null) {
 			this.calculateProductionEnergy.update(null);
 			this.calculateConsumptionEnergy.update(null);
 		} else if (activePower >= 0) {
-			// Convert from kW to W for energy calculation
-			this.calculateProductionEnergy.update(activePower * 1000);
+			this.calculateProductionEnergy.update(activePower);
 			this.calculateConsumptionEnergy.update(0);
 		} else {
 			this.calculateProductionEnergy.update(0);
-			// Convert from kW to W for energy calculation
-			this.calculateConsumptionEnergy.update(-activePower * 1000);
+			this.calculateConsumptionEnergy.update(-activePower);
 		}
 	}
 
