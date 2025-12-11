@@ -112,7 +112,6 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -169,7 +168,6 @@ bower_components
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
 
 # Dependency directories
 node_modules/
@@ -197,8 +195,6 @@ typings/
 .env
 
 ### Gradle ###
-.gradle
-/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
