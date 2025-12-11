@@ -1,6 +1,8 @@
 package io.openems.edge.pvinverter.solis.hybrid;
 
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_1;
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_2;
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_3;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_1;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_3;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_2;
@@ -122,19 +124,19 @@ public class PvInverterSolisHybridImpl extends AbstractOpenemsModbusComponent
 				// =====================================================================
 				new FC4ReadInputRegistersTask(33029, Priority.LOW,
 						m(ElectricityMeter.ChannelId.ACTIVE_PRODUCTION_ENERGY,
-								new UnsignedDoublewordElement(33029).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(33029).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisHybrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_CURRENTMONTH,
-								new UnsignedDoublewordElement(33031).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(33031).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisHybrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_LASTMONTH,
-								new UnsignedDoublewordElement(33033).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(33033).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisHybrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_DAILY,
-								new UnsignedWordElement(33035), SCALE_FACTOR_MINUS_1),
+								new UnsignedWordElement(33035), SCALE_FACTOR_2),
 						m(PvInverterSolisHybrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_YESTERDAY,
-								new UnsignedWordElement(33036), SCALE_FACTOR_MINUS_1),
+								new UnsignedWordElement(33036), SCALE_FACTOR_2),
 						m(PvInverterSolisHybrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_YEAR,
-								new UnsignedDoublewordElement(33037).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(33037).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisHybrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_LASTYEAR,
-								new UnsignedDoublewordElement(33039).wordOrder(WordOrder.MSWLSW))),
+								new UnsignedDoublewordElement(33039).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3)),
 
 				new FC4ReadInputRegistersTask(33049, Priority.HIGH,
 						m(PvInverterSolisHybrid.ChannelId.DC1_VOLTAGE,

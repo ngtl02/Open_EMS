@@ -1,5 +1,7 @@
 package io.openems.edge.pvinverter.solis.ongrid;
 
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_2;
+import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_3;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_1;
 //import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_3;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_2;
@@ -127,15 +129,15 @@ public class PvInverterSolisOnGridImpl extends AbstractOpenemsModbusComponent
 						m(PvInverterSolisOnGrid.ChannelId.DC_TOTAL,
 								new UnsignedDoublewordElement(3006).wordOrder(WordOrder.MSWLSW)),
 						m(ElectricityMeter.ChannelId.ACTIVE_PRODUCTION_ENERGY,
-								new UnsignedDoublewordElement(3008).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(3008).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisOnGrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_CURRENTMONTH,
-								new UnsignedDoublewordElement(3010).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(3010).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisOnGrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_LASTMONTH,
-								new UnsignedDoublewordElement(3012).wordOrder(WordOrder.MSWLSW)),
+								new UnsignedDoublewordElement(3012).wordOrder(WordOrder.MSWLSW), SCALE_FACTOR_3),
 						m(PvInverterSolisOnGrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_DAILY,
-								new UnsignedWordElement(3014), SCALE_FACTOR_MINUS_1),
+								new UnsignedWordElement(3014), SCALE_FACTOR_2),
 						m(PvInverterSolisOnGrid.ChannelId.ACTIVE_PRODUCTION_ENERGY_YESTERDAY,
-								new UnsignedWordElement(3015), SCALE_FACTOR_MINUS_1)
+								new UnsignedWordElement(3015), SCALE_FACTOR_2)
 
 				),
 
@@ -185,6 +187,8 @@ public class PvInverterSolisOnGridImpl extends AbstractOpenemsModbusComponent
 								new SignedDoublewordElement(3057).wordOrder(WordOrder.MSWLSW))),
 				new FC6WriteRegisterTask(3070, //
 						m(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL, new UnsignedWordElement(3070))),
+				new FC6WriteRegisterTask(3071, //
+						m(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL_Q, new UnsignedWordElement(3071))),
 				new FC16WriteRegistersTask(3081,
 						m(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT, new UnsignedWordElement(3081)),
 						new DummyRegisterElement(3082, 3082),

@@ -16,13 +16,21 @@ import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
  */
 public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
+    private static final int Q_SWITCH_OFF = 0x55;
+    private static final int Q_SWITCH_ON = 0xA1;
+
+
     private final Logger log = LoggerFactory.getLogger(SetReactivePowerLimitHandler.class);
     private final PvInverterSolisOnGridImpl parent;
-    private Integer lastQLimitVar = null;
-    private LocalDateTime lastQLimitTime = LocalDateTime.MIN;
+    private final ManagedSymmetricPvInverter.ChannelId channelId;
 
-    public SetReactivePowerLimitHandler(PvInverterSolisOnGridImpl parent) {
+    private Integer lastQLimitPerc = null;
+    private LocalDateTime lastQLimitPercTime = LocalDateTime.MIN;
+
+    public SetReactivePowerLimitHandler(PvInverterSolisOnGridImpl parent,
+            ManagedSymmetricPvInverter.ChannelId reactivePowerLimit) {
         this.parent = parent;
+        this.channelId = reactivePowerLimit;
     }
 
     @Override
@@ -33,44 +41,65 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
         var percentOpt = percentChannel.getNextWriteValueAndReset();
 
         // Check VALUE channel (var)
-        IntegerWriteChannel valueChannel = this.parent
-                .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
+        IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
         var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-        int reactivePowerVar;
-        int qLimitPerc;
+        int qLimitPerc;  // 0-1000 scale (0.1%), can be negative
+        int powerKvar;   // in 0.1kvar
+
+        int maxActivePower = this.parent.getConfig().maxActivePower();
 
         if (percentOpt.isPresent()) {
-            // EVN sent PERCENT - calculate value (var) from percent
-            qLimitPerc = percentOpt.get();
+            // EVN sent PERCENT directly (0-100 or negative) - convert to 0-1000 (0.1% scale)
+            int inputPercent = percentOpt.get();
+            qLimitPerc = inputPercent;  // Convert to 0.1% scale
+            powerKvar = (int) (maxActivePower * inputPercent / 100.0 / 100.0);  // Convert var to 0.1kvar
 
-            // keep percentage in range [0, 100]
-            if (qLimitPerc > 100) {
-                qLimitPerc = 100;
+            // keep percentage in range [-1000, 1000]
+            if (qLimitPerc > 1000) {
+                qLimitPerc = 1000;
             }
-            if (qLimitPerc < 0) {
-                qLimitPerc = 0;
+            if (qLimitPerc < -1000) {
+                qLimitPerc = -1000;
             }
-            reactivePowerVar = (int) (this.parent.config.maxActivePower() * qLimitPerc / 100.0);
         } else if (valueOpt.isPresent()) {
-            // EVN sent VALUE (var) - use it directly
-            reactivePowerVar = valueOpt.get();
-            qLimitPerc = (int) ((double) reactivePowerVar / (double) this.parent.config.maxActivePower() * 100.0);
+            // EVN sent VALUE (var) - calculate percentage
+            int powerVar = valueOpt.get();
+            powerKvar = powerVar /10;  // Convert var to 0.1kvar
+            qLimitPerc = (int) ((double) powerVar / (double) maxActivePower * 1000.0);  // 0.1% scale
+
+            // keep percentage in range [-1000, 1000]
+            if (qLimitPerc > 1000) {
+                qLimitPerc = 1000;
+            }
+            if (qLimitPerc < -1000) {
+                qLimitPerc = -1000;
+            }
         } else {
-            return; // No command to apply
+            // No command - reset to 0% (no reactive power)
+            qLimitPerc = 0;
+            powerKvar = 0;
         }
 
-        if (!Objects.equals(this.lastQLimitVar, reactivePowerVar) || this.lastQLimitTime
-                .isBefore(LocalDateTime.now().minusSeconds(150))) {
+        if (!Objects.equals(this.lastQLimitPerc, qLimitPerc) || this.lastQLimitPercTime
+                .isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
+            // Value needs to be set
+            this.parent.logInfo(this.log, "Apply new Q limit: " + (powerKvar * 100) + " var (" + (qLimitPerc / 10.0) + " %)");
 
-            this.parent.logInfo(this.log, "Apply Q limit: " + reactivePowerVar + " var (" + qLimitPerc + " %)");
+            // Enable reactive power percentage mode (register 5036)
+            IntegerWriteChannel qSwitch = this.parent.channel(PvInverterSolisOnGrid.ChannelId.Q_ADJUSTMENT_SWITCH);
+            qSwitch.setNextWriteValue(Q_SWITCH_Q_PERCENT_VALID);
 
-            IntegerWriteChannel reactivePowerLimitCh = this.parent
-                    .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
-            reactivePowerLimitCh.setNextWriteValue(reactivePowerVar);
+            // Set reactive power percentage (register 5037) - 0.1% scale
+            IntegerWriteChannel qPercentSetting = this.parent.channel(PvInverterSolisOnGrid.ChannelId.Q_PERCENTAGE_SETTING);
+            qPercentSetting.setNextWriteValue(qLimitPerc);
 
-            this.lastQLimitVar = reactivePowerVar;
-            this.lastQLimitTime = LocalDateTime.now();
+            // Set reactive power in kvar (register 5040) - 0.1kvar scale
+            IntegerWriteChannel qKvar = this.parent.channel(PvInverterSolisOnGrid.ChannelId.Q_ADJUSTMENT_KVAR);
+            qKvar.setNextWriteValue(powerKvar);
+
+            this.lastQLimitPerc = qLimitPerc;
+            this.lastQLimitPercTime = LocalDateTime.now();
         }
     }
 }

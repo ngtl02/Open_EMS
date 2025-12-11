@@ -74,11 +74,20 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 				.isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
 			// Value needs to be set
 			this.parent.logInfo(this.log, "Apply new limit: " + power + " W (" + pLimitPerc + " %)");
+
+			// Enable power limitation (register 3070): 0xAA = ON
 			IntegerWriteChannel pRemoteCtrl = this.parent.channel(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL);
 			pRemoteCtrl.setNextWriteValue(0xAA);
+
+			// Write percentage to register 3052: 1% = 100, so 100% = 10000
+			IntegerWriteChannel activePowerLimitPercCh = this.parent
+					.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
+			activePowerLimitPercCh.setNextWriteValue(pLimitPerc * 100); // Solis uses gain=100
+
+			// Write value to register 3081: 1 unit = 10W
 			IntegerWriteChannel activePowerLimitCh = this.parent
 					.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT);
-			activePowerLimitCh.setNextWriteValue(power);
+			activePowerLimitCh.setNextWriteValue(power / 10); // Solis uses gain=10 (1 unit = 10W)
 
 			IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
 			watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());
