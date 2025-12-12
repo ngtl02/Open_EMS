@@ -62,10 +62,8 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 			operatingMode = P_OPERATING_MODE_WATT;
 			usePercent = false;
 		} else {
-			// No command - reset to 100%
-			pLimit = 100;
-			operatingMode = P_OPERATING_MODE_PERCENT;
-			usePercent = true;
+			// No command - do nothing, let the last value persist
+			return;
 		}
 
 		if (!Objects.equals(this.lastPLimit, pLimit) || this.lastPLimitTime

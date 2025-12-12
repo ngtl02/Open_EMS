@@ -71,7 +71,9 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
             this.parent.logInfo(this.log,
                     "Apply Q limit: " + reactivePowerVar + " var (" + qLimitPerc + " %) -> register: " + scaledValue);
 
-            // Write scaled value to register 43134
+            // Write scaled value to Modbus register 43134 via REACTIVE_POWER_LIMIT channel
+            // Note: REACTIVE_POWER_LIMIT is mapped to register 43134 in
+            // defineModbusProtocol()
             IntegerWriteChannel reactivePowerLimitCh = this.parent
                     .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
             reactivePowerLimitCh.setNextWriteValue(scaledValue); // Scaled: 1 = 10Var

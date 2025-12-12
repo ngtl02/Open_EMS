@@ -47,16 +47,16 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
         IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
         var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-        int pLimitPerc;  // 0-1000 scale (0.1%)
-        int powerKw;     // in 0.1kW
+        int pLimitPerc; // 0-1000 scale (0.1%)
+        int powerKw; // in 0.1kW
 
         int maxActivePower = this.parent.getConfig().maxActivePower();
 
         if (percentOpt.isPresent()) {
             // EVN sent PERCENT directly (0-100) - convert to 0-1000 (0.1% scale)
             int inputPercent = percentOpt.get();
-            pLimitPerc = inputPercent * 10;  // Convert to 0.1% scale
-            powerKw = (int) (maxActivePower * inputPercent / 100.0 / 100.0);  // Convert W to 0.1kW
+            pLimitPerc = inputPercent * 10; // Convert to 0.1% scale
+            powerKw = (int) (maxActivePower * inputPercent / 100.0 / 100.0); // Convert W to 0.1kW
 
             // keep percentage in range [0, 1000]
             if (pLimitPerc > 1000) {
@@ -68,8 +68,8 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
         } else if (valueOpt.isPresent()) {
             // EVN sent VALUE (W) - calculate percentage
             int powerW = valueOpt.get();
-            powerKw = powerW / 100;  // Convert W to 0.1kW
-            pLimitPerc = (int) ((double) powerW / (double) maxActivePower * 1000.0);  // 0.1% scale
+            powerKw = powerW / 100; // Convert W to 0.1kW
+            pLimitPerc = (int) ((double) powerW / (double) maxActivePower * 1000.0); // 0.1% scale
 
             // keep percentage in range [0, 1000]
             if (pLimitPerc > 1000) {
@@ -79,15 +79,15 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
                 pLimitPerc = 0;
             }
         } else {
-            // No command - reset to 100%
-            pLimitPerc = 1000;  // 100% in 0.1% scale
-            powerKw = maxActivePower / 100;  // in 0.1kW
+            // No command - do nothing, let the last value persist
+            return;
         }
 
         if (!Objects.equals(this.lastPLimitPerc, pLimitPerc) || this.lastPLimitPercTime
                 .isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
             // Value needs to be set
-            this.parent.logInfo(this.log, "Apply new P limit: " + (powerKw * 100) + " W (" + (pLimitPerc / 10.0) + " %)");
+            this.parent.logInfo(this.log,
+                    "Apply new P limit: " + (powerKw * 100) + " W (" + (pLimitPerc / 10.0) + " %)");
 
             // Enable power limitation (register 5007)
             IntegerWriteChannel pLimitSwitch = this.parent.channel(PvInverterSungrow.ChannelId.P_LIMITATION_SWITCH);
