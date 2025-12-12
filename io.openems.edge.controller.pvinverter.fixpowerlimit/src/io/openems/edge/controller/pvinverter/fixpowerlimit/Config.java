@@ -20,14 +20,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	@AttributeDefinition(name = "PV-Inverter-ID", description = "ID of PV-Inverter device.")
 	String pvInverter_id();
 
-	@AttributeDefinition(name = "Use Percentage", description = "If true, use percentage limit instead of absolute Watt value")
-	boolean usePercentage() default false;
-
-	@AttributeDefinition(name = "Power Limit [W]", description = "Fixed power limit in Watts (used when usePercentage is false)")
-	int powerLimit() default 0;
-
-	@AttributeDefinition(name = "Power Limit [%]", description = "Fixed power limit as percentage 0-100 (used when usePercentage is true)")
-	int powerLimitPercent() default 100;
+	@AttributeDefinition(name = "Power Limit [W]", description = "")
+	int powerLimit();
 
 	String webconsole_configurationFactory_nameHint() default "Controller PV-Inverter Fix Power Limit [{id}]";
 }

@@ -65,8 +65,9 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 				pLimitPerc = 0;
 			}
 		} else {
-			// No command - do nothing, let the last value persist
-			return;
+			// No command - reset to 100%
+			power = this.parent.config.maxActivePower();
+			pLimitPerc = 100;
 		}
 
 		if (!Objects.equals(this.lastPLimitPerc, pLimitPerc) || this.lastPLimitPercTime

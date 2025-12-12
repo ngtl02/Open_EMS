@@ -155,29 +155,44 @@ public class EvnProcessImage implements ProcessImage {
 
     @Override
     public synchronized InputRegister[] getInputRegisterRange(int offset, int count) throws IllegalAddressException {
-        LOG.info("EVN FC4 getInputRegisterRange({}, {}) - Monitoring Data", offset, count);
+        LOG.info("EVN getInputRegisterRange({}, {})", offset, count);
 
-        InputRegister[] result = new InputRegister[count];
+        Register[] registers = getRegisterRange(offset, count);
+        InputRegister[] result = new InputRegister[registers.length];
+        for (int i = 0; i < registers.length; i++) {
+            result[i] = registers[i];
+        }
+        return result;
+    }
+
+    @Override
+    public synchronized Register[] getRegisterRange(int offset, int count) throws IllegalAddressException {
+        LOG.info("EVN getRegisterRange({}, {})", offset, count);
+
+        Register[] result = new Register[count];
 
         for (int i = 0; i < count; i++) {
             int address = offset + i;
             int baseAddr = getBaseAddress(address);
 
             if (baseAddr >= 0) {
-                // This is a mapped float register - monitoring data
+                // This is a mapped float register
                 float value = getFloatValueForAddress(address);
                 Register[] floatRegs = createFloatRegisters(value);
 
                 if (address == baseAddr) {
-                    result[i] = floatRegs[0]; // High word
-                    LOG.debug("  FC4 Reg[{}] = 0x{} (high word, float={})",
+                    // High word
+                    result[i] = floatRegs[0];
+                    LOG.info("  Reg[{}] = 0x{} (high word, float={})",
                             address, String.format("%04X", floatRegs[0].getValue()), value);
                 } else {
-                    result[i] = floatRegs[1]; // Low word
-                    LOG.debug("  FC4 Reg[{}] = 0x{} (low word)",
+                    // Low word
+                    result[i] = floatRegs[1];
+                    LOG.info("  Reg[{}] = 0x{} (low word)",
                             address, String.format("%04X", floatRegs[1].getValue()));
                 }
             } else {
+                // Unmapped - return 0
                 result[i] = new SimpleInputRegister(0);
             }
         }
@@ -185,85 +200,9 @@ public class EvnProcessImage implements ProcessImage {
         return result;
     }
 
-    /**
-     * FC3 - Read Holding Registers (Control registers)
-     * Returns control register values (P/Q enable, setpoints)
-     */
-    @Override
-    public synchronized Register[] getRegisterRange(int offset, int count) throws IllegalAddressException {
-        LOG.info("EVN FC3 getRegisterRange({}, {}) - Control Registers", offset, count);
-
-        Register[] result = new Register[count];
-
-        for (int i = 0; i < count; i++) {
-            int address = offset + i;
-            result[i] = getHoldingRegister(address);
-        }
-
-        return result;
-    }
-
-    /**
-     * Get value of a holding register (control registers).
-     */
-    private Register getHoldingRegister(int address) {
-        // Handle control register reads
-        switch (address) {
-            case EvnWriteRegisters.P_OUT_ENABLE_ADDRESS: // 11
-                return new SimpleRegister(this.pOutEnabled);
-
-            case EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS: // 12
-                return new SimpleRegister(this.qOutEnabled);
-
-            case EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS: // 13 - High word
-            case EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS + 1: // 14 - Low word
-                return getFloatRegisterWord(this.pOutSetpointPercent,
-                        address == EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS);
-
-            case EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS: // 15 - High word
-            case EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS + 1: // 16 - Low word
-                return getFloatRegisterWord(this.pOutSetpointKw,
-                        address == EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS);
-
-            case EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS: // 17 - High word
-            case EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS + 1: // 18 - Low word
-                return getFloatRegisterWord(this.qOutSetpointPercent,
-                        address == EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS);
-
-            case EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS: // 19 - High word
-            case EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS + 1: // 20 - Low word
-                return getFloatRegisterWord(this.qOutSetpointKvar,
-                        address == EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS);
-
-            default:
-                LOG.debug("FC3 Reg[{}] = 0 (unmapped)", address);
-                return new SimpleRegister(0);
-        }
-    }
-
-    /**
-     * Get high or low word of a float value as a register.
-     */
-    private Register getFloatRegisterWord(float value, boolean isHighWord) {
-        Register[] regs = createFloatRegisters(value);
-        return isHighWord ? regs[0] : regs[1];
-    }
-
-    /**
-     * FC3 - Read single Holding Register (Control registers)
-     */
     @Override
     public synchronized Register getRegister(int ref) throws IllegalAddressException {
-        LOG.debug("EVN FC3 getRegister({}) - Control Register", ref);
-        return getHoldingRegister(ref);
-    }
-
-    /**
-     * FC4 - Read single Input Register (Monitoring data)
-     */
-    @Override
-    public synchronized InputRegister getInputRegister(int ref) throws IllegalAddressException {
-        LOG.debug("EVN FC4 getInputRegister({}) - Monitoring Data", ref);
+        LOG.debug("EVN getRegister({})", ref);
 
         int baseAddr = getBaseAddress(ref);
         if (baseAddr >= 0) {
@@ -273,6 +212,11 @@ public class EvnProcessImage implements ProcessImage {
         }
 
         return new SimpleInputRegister(0);
+    }
+
+    @Override
+    public synchronized InputRegister getInputRegister(int ref) throws IllegalAddressException {
+        return (InputRegister) getRegister(ref);
     }
 
     // ==================== WRITE OPERATIONS (FC06/FC16) ====================

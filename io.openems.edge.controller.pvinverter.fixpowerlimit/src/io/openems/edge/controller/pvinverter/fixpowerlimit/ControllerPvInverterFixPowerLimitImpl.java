@@ -32,12 +32,8 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
 	private ComponentManager componentManager;
 
 	private String pvInverterId;
-	/** Use percentage mode if true, absolute Watt mode if false. */
-	private boolean usePercentage = false;
-	/** The configured Power Limit in Watts. */
+	/** The configured Power Limit. */
 	private int powerLimit = 0;
-	/** The configured Power Limit in percentage (0-100). */
-	private int powerLimitPercent = 100;
 
 	public ControllerPvInverterFixPowerLimitImpl() {
 		super(//
@@ -52,13 +48,7 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
 		super.activate(context, config.id(), config.alias(), config.enabled());
 
 		this.pvInverterId = config.pvInverter_id();
-		this.usePercentage = config.usePercentage();
 		this.powerLimit = config.powerLimit();
-		this.powerLimitPercent = config.powerLimitPercent();
-
-		this.logInfo(this.log, "Configured: " + (this.usePercentage
-				? this.powerLimitPercent + "%"
-				: this.powerLimit + " W"));
 	}
 
 	@Override
@@ -68,11 +58,7 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
 		ManagedSymmetricPvInverter pvInverter;
 		try {
 			pvInverter = this.componentManager.getComponent(this.pvInverterId);
-			if (this.usePercentage) {
-				pvInverter.setActivePowerLimitPercent(null);
-			} else {
-				pvInverter.setActivePowerLimit(null);
-			}
+			pvInverter.setActivePowerLimit(null);
 		} catch (OpenemsNamedException e) {
 			this.logError(this.log, e.getMessage());
 		}
@@ -83,13 +69,7 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
 	@Override
 	public void run() throws OpenemsNamedException {
 		ManagedSymmetricPvInverter pvInverter = this.componentManager.getComponent(this.pvInverterId);
-
-		if (this.usePercentage) {
-			// Use percentage limit
-			pvInverter.setActivePowerLimitPercent(this.powerLimitPercent);
-		} else {
-			// Use absolute Watt limit
-			pvInverter.setActivePowerLimit(this.powerLimit);
-		}
+		pvInverter.setActivePowerLimit(this.powerLimit);
 	}
+
 }

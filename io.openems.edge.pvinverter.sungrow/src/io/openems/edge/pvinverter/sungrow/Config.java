@@ -9,7 +9,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @interface Config {
 
 	@AttributeDefinition(name = "Component-ID", description = "Unique ID of this Component")
-	String id() default "pvInverter0";
+	String id() default "io.openems.edge.pvinverter.sungrow0";
 
 	@AttributeDefinition(name = "Alias", description = "Human-readable name of this Component; defaults to Component-ID")
 	String alias() default "";
@@ -29,6 +29,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	@AttributeDefinition(name = "Max Active Power [W]", description = "Maximum active power of the inverter in Watts")
 	int maxActivePower() default 60000;
 
-	String webconsole_configurationFactory_nameHint() default "PV-Inverter Sungrow Hybrid [{id}]";
+	String webconsole_configurationFactory_nameHint() default "io.openems.edge.pvinverter.sungrow [{id}]";
 
 }
