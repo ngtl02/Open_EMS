@@ -1,12 +1,7 @@
 # Created by https://www.gitignore.io/api/java,maven,gradle,angular,eclipse,node
 
 ### Angular ###
-## Angular ##
-# compiled output
-/dist
-/tmp
-/app/**/*.js
-/app/**/*.js.map
+
 
 # dependencies
 /node_modules
