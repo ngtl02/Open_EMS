@@ -87,31 +87,6 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
 
     // ... (rest of methods)
 
-    private void executeShellCommand(String command) throws IOException, InterruptedException {
-        this.logInfo(this.log, "Executing command: " + command);
-        ProcessBuilder builder = new ProcessBuilder("bash", "-c", command);
-        Process process = builder.start();
-
-        // Add timeout to prevent hanging forever
-        boolean finished = process.waitFor(10, TimeUnit.SECONDS);
-        if (!finished) {
-            process.destroyForcibly();
-            throw new IOException("Command timed out: " + command);
-        }
-
-        if (process.exitValue() != 0) {
-            // Read error stream
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            throw new IOException("Command Failed with exit code " + process.exitValue() + ": " + sb.toString());
-        }
-        this.logInfo(this.log, "Command executed successfully.");
-    }
-
     @Modified
     void modified(ComponentContext context, Config config) {
         super.modified(context, config.id(), config.alias(), config.enabled());
@@ -440,15 +415,11 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
     private String getConnectionNameFromInterface(String interfaceName) {
         try {
             // Command: nmcli -g GENERAL.CONNECTION device show eth0
-            String cmd = "nmcli -g GENERAL.CONNECTION device show " + interfaceName;
-            ProcessBuilder builder = new ProcessBuilder("bash", "-c", cmd);
-            Process process = builder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            process.waitFor();
-            if (line != null)
-                return line.trim();
+            // Added sudo just in case, though usually not needed for show
+            String cmd = "sudo nmcli -g GENERAL.CONNECTION device show " + interfaceName;
+            return executeShellCommand(cmd).trim();
         } catch (Exception e) {
+            this.logWarn(this.log, "Failed to get connection name for " + interfaceName + ": " + e.getMessage());
         }
         return null;
     }
@@ -471,7 +442,15 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
         return false;
     }
 
-    private void executeShellCommand(String command) throws IOException, InterruptedException {
+    /**
+     * Executes a shell command with timeout and returns standard output.
+     * 
+     * @param command The command to execute
+     * @return The standard output (stdout)
+     * @throws IOException          If command fails via exit code or IO error
+     * @throws InterruptedException If interrupted
+     */
+    private String executeShellCommand(String command) throws IOException, InterruptedException {
         this.logInfo(this.log, "Executing command: " + command);
         ProcessBuilder builder = new ProcessBuilder("bash", "-c", command);
         Process process = builder.start();
@@ -490,9 +469,21 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
+                sb.append("\n");
             }
-            throw new IOException("Command Failed with exit code " + process.exitValue() + ": " + sb.toString());
+            throw new IOException("Command Failed with exit code " + process.exitValue() + ": " + sb.toString().trim());
         }
-        this.logInfo(this.log, "Command executed successfully.");
+
+        // Read standard output
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+            sb.append(System.lineSeparator());
+        }
+        String output = sb.toString().trim();
+        this.logInfo(this.log, "Command executed successfully. Output length: " + output.length());
+        return output;
     }
 }
