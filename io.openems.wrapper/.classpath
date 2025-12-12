@@ -24,76 +24,12 @@
 			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JavaSE-21">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/github/rzymek/opczip/1.2.0/opczip-1.2.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="opczip-1.2.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/io/helins/linux-common/0.1.4/linux-common-0.1.4.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="linux-common-0.1.4.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/squareup/retrofit2/adapter-rxjava3/3.0.0/adapter-rxjava3-3.0.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="adapter-rxjava3-3.0.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.10.2/kotlinx-coroutines-core-jvm-1.10.2.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="kotlinx-coroutines-core-jvm-1.10.2.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/squareup/okhttp3/okhttp-jvm/5.3.2/okhttp-jvm-5.3.2.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="okhttp-jvm-5.3.2.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/eu/chargetime/ocpp/v1_6/1.1.0/v1_6-1.1.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="v1_6-1.1.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/io/helins/linux-io/0.0.4/linux-io-0.0.4.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="linux-io-0.0.4.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/influxdb/influxdb-client-java/7.4.0/influxdb-client-java-7.4.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="influxdb-client-java-7.4.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
@@ -101,63 +37,23 @@
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/org/dhatim/fastexcel/0.19.0/fastexcel-0.19.0.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/info/faljse/SDNotify/1.6/SDNotify-1.6.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="fastexcel-0.19.0.jar"/>
+			<attribute name="artifactId" value="SDNotify-1.6.jar"/>
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/influxdb/influxdb-client-core/7.4.0/influxdb-client-core-7.4.0.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.10.2/kotlinx-coroutines-core-jvm-1.10.2.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="influxdb-client-core-7.4.0.jar"/>
+			<attribute name="artifactId" value="kotlinx-coroutines-core-jvm-1.10.2.jar"/>
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/eu/chargetime/ocpp/OCPP-J/1.0.2/OCPP-J-1.0.2.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="OCPP-J-1.0.2.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/org/dhatim/fastexcel-reader/0.19.0/fastexcel-reader-0.19.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="fastexcel-reader-0.19.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/de/bytefish/pgbulkinsert/8.1.6/pgbulkinsert-8.1.6.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="pgbulkinsert-8.1.6.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/org/eclipse/paho/org.eclipse.paho.mqttv5.client/1.2.5/org.eclipse.paho.mqttv5.client-1.2.5.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="org.eclipse.paho.mqttv5.client-1.2.5.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/eu/chargetime/ocpp/common/1.0.2/common-1.0.2.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="common-1.0.2.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
@@ -165,63 +61,15 @@
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/influxdb/influxdb-client-utils/7.4.0/influxdb-client-utils-7.4.0.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/influxdb/influxdb-client-java/7.4.0/influxdb-client-java-7.4.0.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="influxdb-client-utils-7.4.0.jar"/>
+			<attribute name="artifactId" value="influxdb-client-java-7.4.0.jar"/>
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/fr/turri/aXMLRPC/1.17.0/aXMLRPC-1.17.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="aXMLRPC-1.17.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/squareup/retrofit2/retrofit/3.0.0/retrofit-3.0.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="retrofit-3.0.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/influxdb/flux-dsl/7.4.0/flux-dsl-7.4.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="flux-dsl-7.4.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/squareup/retrofit2/converter-gson/3.0.0/converter-gson-3.0.0.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="converter-gson-3.0.0.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/io/reactivex/rxjava3/rxjava/3.1.8/rxjava-3.1.8.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="rxjava-3.1.8.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/io/helins/linux-errno/1.0.2/linux-errno-1.0.2.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="linux-errno-1.0.2.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/com/squareup/retrofit2/converter-scalars/3.0.0/converter-scalars-3.0.0.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/squareup/retrofit2/converter-scalars/3.0.0/converter-scalars-3.0.0.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
@@ -229,15 +77,7 @@
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/io/helins/linux-i2c/1.0.2/linux-i2c-1.0.2.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="linux-i2c-1.0.2.jar"/>
-			<attribute name="version" value="unknown"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/io/jenetics/jenetics/8.3.0/jenetics-8.3.0.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/io/jenetics/jenetics/8.3.0/jenetics-8.3.0.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
@@ -245,11 +85,171 @@
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Linh/.m2/repository/info/faljse/SDNotify/1.6/SDNotify-1.6.jar">
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/squareup/retrofit2/adapter-rxjava3/3.0.0/adapter-rxjava3-3.0.0.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="unknown"/>
-			<attribute name="artifactId" value="SDNotify-1.6.jar"/>
+			<attribute name="artifactId" value="adapter-rxjava3-3.0.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/io/helins/linux-i2c/1.0.2/linux-i2c-1.0.2.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="linux-i2c-1.0.2.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/influxdb/influxdb-client-utils/7.4.0/influxdb-client-utils-7.4.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="influxdb-client-utils-7.4.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/eu/chargetime/ocpp/common/1.0.2/common-1.0.2.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="common-1.0.2.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/squareup/retrofit2/retrofit/3.0.0/retrofit-3.0.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="retrofit-3.0.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/org/dhatim/fastexcel/0.19.0/fastexcel-0.19.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="fastexcel-0.19.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/eu/chargetime/ocpp/OCPP-J/1.0.2/OCPP-J-1.0.2.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="OCPP-J-1.0.2.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/eu/chargetime/ocpp/v1_6/1.1.0/v1_6-1.1.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="v1_6-1.1.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/io/helins/linux-common/0.1.4/linux-common-0.1.4.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="linux-common-0.1.4.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/org/eclipse/paho/org.eclipse.paho.mqttv5.client/1.2.5/org.eclipse.paho.mqttv5.client-1.2.5.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="org.eclipse.paho.mqttv5.client-1.2.5.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/de/bytefish/pgbulkinsert/8.1.6/pgbulkinsert-8.1.6.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="pgbulkinsert-8.1.6.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/org/dhatim/fastexcel-reader/0.19.0/fastexcel-reader-0.19.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="fastexcel-reader-0.19.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/io/helins/linux-errno/1.0.2/linux-errno-1.0.2.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="linux-errno-1.0.2.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/influxdb/flux-dsl/7.4.0/flux-dsl-7.4.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="flux-dsl-7.4.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/squareup/retrofit2/converter-gson/3.0.0/converter-gson-3.0.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="converter-gson-3.0.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/fr/turri/aXMLRPC/1.17.0/aXMLRPC-1.17.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="aXMLRPC-1.17.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/github/rzymek/opczip/1.2.0/opczip-1.2.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="opczip-1.2.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/io/helins/linux-io/0.0.4/linux-io-0.0.4.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="linux-io-0.0.4.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/influxdb/influxdb-client-core/7.4.0/influxdb-client-core-7.4.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="influxdb-client-core-7.4.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/io/reactivex/rxjava3/rxjava/3.1.8/rxjava-3.1.8.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="rxjava-3.1.8.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/thainguyen/.m2/repository/com/squareup/okhttp3/okhttp-jvm/5.3.2/okhttp-jvm-5.3.2.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="okhttp-jvm-5.3.2.jar"/>
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>

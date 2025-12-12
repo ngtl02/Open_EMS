@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,7 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
     protected ConfigurationAdmin cm;
 
     private Config config;
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public NetworkManagerImpl() {
         super(OpenemsComponent.ChannelId.values(), NetworkManager.ChannelId.values());
@@ -60,6 +64,16 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
     void activate(ComponentContext context, Config config) {
         super.activate(context, config.id(), config.alias(), config.enabled());
         this.config = config;
+
+        // Schedule polling task
+        this.executor.scheduleWithFixedDelay(() -> {
+            try {
+                this.updateIpChannels();
+            } catch (Exception e) {
+                this.logWarn(this.log, "Error in network monitor task: " + e.getMessage());
+            }
+        }, 1, 5, TimeUnit.SECONDS);
+
         this.runTask();
     }
 
@@ -72,6 +86,9 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
 
     @Deactivate
     protected void deactivate() {
+        if (this.executor != null) {
+            this.executor.shutdownNow();
+        }
         super.deactivate();
     }
 
@@ -268,10 +285,14 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
 
                     if (gateway != null && !gateway.isEmpty()) {
                         cmdBuilder.append(String.format(" ipv4.gateway %s", gateway));
+                    } else {
+                        cmdBuilder.append(" ipv4.gateway \"\"");
                     }
 
                     if (!dnsString.isEmpty()) {
                         cmdBuilder.append(String.format(" ipv4.dns \"%s\"", dnsString));
+                    } else {
+                        cmdBuilder.append(" ipv4.dns \"\"");
                     }
 
                     cmdBuilder.append(" ipv4.method manual");
