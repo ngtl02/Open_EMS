@@ -62,19 +62,54 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
 
     @Activate
     void activate(ComponentContext context, Config config) {
-        super.activate(context, config.id(), config.alias(), config.enabled());
-        this.config = config;
+        this.logInfo(this.log, "Activating NetworkManager...");
+        try {
+            super.activate(context, config.id(), config.alias(), config.enabled());
+            this.config = config;
 
-        // Schedule polling task
-        this.executor.scheduleWithFixedDelay(() -> {
-            try {
-                this.updateIpChannels();
-            } catch (Exception e) {
-                this.logWarn(this.log, "Error in network monitor task: " + e.getMessage());
+            this.logInfo(this.log, "Starting Network Monitoring Task...");
+            // Schedule polling task
+            this.executor.scheduleWithFixedDelay(() -> {
+                try {
+                    this.updateIpChannels();
+                } catch (Exception e) {
+                    this.logWarn(this.log, "Error in network monitor task: " + e.getMessage());
+                }
+            }, 1, 5, TimeUnit.SECONDS);
+
+            this.logInfo(this.log, "NetworkManager Activated Successfully.");
+            this.runTask();
+        } catch (Exception e) {
+            this.logError(this.log, "Failed to activate NetworkManager: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ... (rest of methods)
+
+    private void executeShellCommand(String command) throws IOException, InterruptedException {
+        this.logInfo(this.log, "Executing command: " + command);
+        ProcessBuilder builder = new ProcessBuilder("bash", "-c", command);
+        Process process = builder.start();
+
+        // Add timeout to prevent hanging forever
+        boolean finished = process.waitFor(10, TimeUnit.SECONDS);
+        if (!finished) {
+            process.destroyForcibly();
+            throw new IOException("Command timed out: " + command);
+        }
+
+        if (process.exitValue() != 0) {
+            // Read error stream
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
             }
-        }, 1, 5, TimeUnit.SECONDS);
-
-        this.runTask();
+            throw new IOException("Command Failed with exit code " + process.exitValue() + ": " + sb.toString());
+        }
+        this.logInfo(this.log, "Command executed successfully.");
     }
 
     @Modified
@@ -437,10 +472,27 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
     }
 
     private void executeShellCommand(String command) throws IOException, InterruptedException {
+        this.logInfo(this.log, "Executing command: " + command);
         ProcessBuilder builder = new ProcessBuilder("bash", "-c", command);
         Process process = builder.start();
-        if (process.waitFor() != 0) {
-            throw new IOException("Command Failed");
+
+        // Add timeout to prevent hanging forever
+        boolean finished = process.waitFor(10, TimeUnit.SECONDS);
+        if (!finished) {
+            process.destroyForcibly();
+            throw new IOException("Command timed out: " + command);
         }
+
+        if (process.exitValue() != 0) {
+            // Read error stream
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            throw new IOException("Command Failed with exit code " + process.exitValue() + ": " + sb.toString());
+        }
+        this.logInfo(this.log, "Command executed successfully.");
     }
 }
