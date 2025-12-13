@@ -23,43 +23,39 @@ import io.openems.edge.common.component.OpenemsComponent;
 
 /**
  * Custom Process Image for EVN Modbus TCP.
- * Implements ProcessImage interface directly (like MyProcessImage).
- * Supports both READ (monitoring) and WRITE (control commands) operations.
+ * Implements ProcessImage interface to support both READ and WRITE operations.
+ * 
+ * <p>
+ * Key mechanism for FC06/FC16 write support:
+ * <ul>
+ * <li>Holding Registers (address 0-199) are stored as SimpleRegister objects</li>
+ * <li>When j2mod receives FC06/FC16, it calls getRegister(addr) to get the Register object</li>
+ * <li>Then j2mod calls register.setValue(value) DIRECTLY on the returned object</li>
+ * <li>Since we return the SAME Register object, the value is updated in our array</li>
+ * </ul>
+ * 
+ * <p>
+ * FC03: Read Holding Registers - returns control register values (EVN writes here)
+ * FC04: Read Input Registers - returns monitoring data from OpenEMS channels
+ * FC06: Write Single Register - j2mod writes to our holdingRegisters array
+ * FC16: Write Multiple Registers - j2mod writes to our holdingRegisters array
  */
 public class EvnProcessImage implements ProcessImage {
 
     private static final Logger LOG = LoggerFactory.getLogger(EvnProcessImage.class);
     private static final int DEFAULT_INVERTER_COUNT = 10;
+    private static final int MAX_REGISTER_ADDRESS = 200;
 
     private final ComponentManager componentManager;
     private final int inverterCount;
     private final java.util.List<EvnRegisterMapping> mappings;
 
-    // ==================== EVN WRITE COMMAND STATE ====================
-    // These are set by EVN via Modbus write operations (FC06/FC16)
-    // According to EVN specification
-
-    /** P-out Enable: 0=Disabled, 1=Enabled (Address 11) */
-    private volatile int pOutEnabled = 0;
-
-    /** P-out Setpoint in % (Address 13-14) */
-    private volatile float pOutSetpointPercent = 0f;
-
-    /** P-out Setpoint in kW (Address 15-16) */
-    private volatile float pOutSetpointKw = 0f;
-
-    /** Q-out Enable: 0=Disabled, 1=Enabled (Address 12) */
-    private volatile int qOutEnabled = 0;
-
-    /** Q-out Setpoint in % (Address 17-18) */
-    private volatile float qOutSetpointPercent = 0f;
-
-    /** Q-out Setpoint in kvar (Address 19-20) */
-    private volatile float qOutSetpointKvar = 0f;
-
-    /** Temporary storage for float high word during 2-register writes */
-    private volatile int tempHighWord = 0;
-    private volatile int lastWriteAddress = -1;
+    /**
+     * Holding Registers array - these are the registers that EVN can write to.
+     * j2mod calls getRegister(addr) and then calls setValue() on the returned object.
+     * Because we return the SAME object from this array, the value gets updated.
+     */
+    private final SimpleRegister[] holdingRegisters;
 
     public EvnProcessImage(ComponentManager componentManager) {
         this(componentManager, DEFAULT_INVERTER_COUNT);
@@ -69,7 +65,27 @@ public class EvnProcessImage implements ProcessImage {
         this.componentManager = componentManager;
         this.inverterCount = inverterCount;
         this.mappings = EvnRegisterMapping.getAllMappings(inverterCount);
-        LOG.info("EVN ProcessImage initialized with {} mappings", mappings.size());
+
+        // Initialize holding registers for control commands
+        // These are SimpleRegister objects which have setValue() method
+        this.holdingRegisters = new SimpleRegister[MAX_REGISTER_ADDRESS];
+        for (int i = 0; i < MAX_REGISTER_ADDRESS; i++) {
+            this.holdingRegisters[i] = new SimpleRegister(0);
+        }
+
+        LOG.info("EVN ProcessImage initialized with {} mappings, {} holding registers for write support",
+                mappings.size(), MAX_REGISTER_ADDRESS);
+        LOG.info("Control registers: P-out Enable={}, Q-out Enable={}, P-out%={}-{}, P-out kW={}-{}, Q-out%={}-{}, Q-out kvar={}-{}",
+                EvnWriteRegisters.P_OUT_ENABLE_ADDRESS,
+                EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS,
+                EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS,
+                EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS + 1,
+                EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS,
+                EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS + 1,
+                EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS,
+                EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS + 1,
+                EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS,
+                EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS + 1);
     }
 
     /**
@@ -105,17 +121,12 @@ public class EvnProcessImage implements ProcessImage {
 
     /**
      * Gets float value for a register address.
-     * Returns the scaled float value if this is a mapped address, or 0 for
-     * unmapped.
-     * Scale factor converts internal units (mV, mA, W) to EVN units (V, A, kW).
      */
     private float getFloatValueForAddress(int address) {
-        // Find mapping for this address (could be high or low word)
         for (EvnRegisterMapping mapping : this.mappings) {
             int baseAddr = mapping.getAddress();
             if (address == baseAddr || address == baseAddr + 1) {
                 float rawValue = readChannelValue(mapping.getComponentId(), mapping.getChannelId());
-                // Apply scale factor: e.g., 0.001 converts W->kW, mV->V, mA->A
                 return rawValue * mapping.getScaleFactor();
             }
         }
@@ -136,63 +147,37 @@ public class EvnProcessImage implements ProcessImage {
     }
 
     /**
-     * Creates registers for a float value.
-     * Returns 2 registers [highWord, lowWord].
+     * Creates words for a float value [highWord, lowWord].
      */
-    private Register[] createFloatRegisters(float value) {
+    private int[] createFloatWords(float value) {
         int intBits = Float.floatToIntBits(value);
-        byte[] bytes = new byte[4];
-        bytes[0] = (byte) ((intBits >> 24) & 0xFF);
-        bytes[1] = (byte) ((intBits >> 16) & 0xFF);
-        bytes[2] = (byte) ((intBits >> 8) & 0xFF);
-        bytes[3] = (byte) (intBits & 0xFF);
-
-        return new Register[] {
-                new SimpleInputRegister(bytes[0], bytes[1]), // High word
-                new SimpleInputRegister(bytes[2], bytes[3]) // Low word
-        };
+        int highWord = (intBits >> 16) & 0xFFFF;
+        int lowWord = intBits & 0xFFFF;
+        return new int[] { highWord, lowWord };
     }
+
+    // ==================== FC04 - Read Input Registers (Monitoring Data) ====================
 
     @Override
     public synchronized InputRegister[] getInputRegisterRange(int offset, int count) throws IllegalAddressException {
-        LOG.info("EVN getInputRegisterRange({}, {})", offset, count);
+        LOG.debug("EVN FC4 getInputRegisterRange({}, {}) - Monitoring Data", offset, count);
 
-        Register[] registers = getRegisterRange(offset, count);
-        InputRegister[] result = new InputRegister[registers.length];
-        for (int i = 0; i < registers.length; i++) {
-            result[i] = registers[i];
-        }
-        return result;
-    }
-
-    @Override
-    public synchronized Register[] getRegisterRange(int offset, int count) throws IllegalAddressException {
-        LOG.info("EVN getRegisterRange({}, {})", offset, count);
-
-        Register[] result = new Register[count];
+        InputRegister[] result = new InputRegister[count];
 
         for (int i = 0; i < count; i++) {
             int address = offset + i;
             int baseAddr = getBaseAddress(address);
 
             if (baseAddr >= 0) {
-                // This is a mapped float register
                 float value = getFloatValueForAddress(address);
-                Register[] floatRegs = createFloatRegisters(value);
+                int[] words = createFloatWords(value);
 
                 if (address == baseAddr) {
-                    // High word
-                    result[i] = floatRegs[0];
-                    LOG.info("  Reg[{}] = 0x{} (high word, float={})",
-                            address, String.format("%04X", floatRegs[0].getValue()), value);
+                    result[i] = new SimpleInputRegister(words[0]);
                 } else {
-                    // Low word
-                    result[i] = floatRegs[1];
-                    LOG.info("  Reg[{}] = 0x{} (low word)",
-                            address, String.format("%04X", floatRegs[1].getValue()));
+                    result[i] = new SimpleInputRegister(words[1]);
                 }
             } else {
-                // Unmapped - return 0
                 result[i] = new SimpleInputRegister(0);
             }
         }
@@ -201,178 +186,161 @@ public class EvnProcessImage implements ProcessImage {
     }
 
     @Override
-    public synchronized Register getRegister(int ref) throws IllegalAddressException {
-        LOG.debug("EVN getRegister({})", ref);
+    public synchronized InputRegister getInputRegister(int ref) throws IllegalAddressException {
+        LOG.debug("EVN FC4 getInputRegister({}) - Monitoring Data", ref);
 
         int baseAddr = getBaseAddress(ref);
         if (baseAddr >= 0) {
             float value = getFloatValueForAddress(ref);
-            Register[] floatRegs = createFloatRegisters(value);
-            return (ref == baseAddr) ? floatRegs[0] : floatRegs[1];
+            int[] words = createFloatWords(value);
+            return new SimpleInputRegister(ref == baseAddr ? words[0] : words[1]);
         }
 
         return new SimpleInputRegister(0);
     }
 
     @Override
-    public synchronized InputRegister getInputRegister(int ref) throws IllegalAddressException {
-        return (InputRegister) getRegister(ref);
+    public int getInputRegisterCount() {
+        return MAX_REGISTER_ADDRESS;
     }
 
-    // ==================== WRITE OPERATIONS (FC06/FC16) ====================
-
-    /**
-     * Set single register value (FC06).
-     * Note: ProcessImage interface doesn't define this, we add it for write
-     * support.
-     */
-    public synchronized void setRegister(int ref, Register reg) throws IllegalAddressException {
-        int value = reg.getValue();
-        handleWriteRegister(ref, value);
-    }
-
-    /**
-     * Set multiple registers (FC16).
-     * Note: ProcessImage interface doesn't define this, we add it for write
-     * support.
-     */
-    public synchronized void setRegisterRange(int ref, Register[] regs) throws IllegalAddressException {
-        LOG.info("EVN setRegisterRange({}, count={})", ref, regs.length);
-        for (int i = 0; i < regs.length; i++) {
-            handleWriteRegister(ref + i, regs[i].getValue());
-        }
-    }
-
-    /**
-     * Handle write to a single register address.
-     * Based on EVN specification for control registers.
-     */
-    private void handleWriteRegister(int address, int value) {
-        LOG.info("EVN WRITE: address={}, value={} (0x{})", address, value, String.format("%04X", value));
-
-        switch (address) {
-            // ========== P-out Control ==========
-            case EvnWriteRegisters.P_OUT_ENABLE_ADDRESS: // 11
-                this.pOutEnabled = value;
-                LOG.info("EVN SET P-out Enable = {} ({})", value, value == 0 ? "Disabled" : "Enabled");
-                break;
-
-            case EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS: // 13 - High word
-                this.tempHighWord = value;
-                this.lastWriteAddress = address;
-                break;
-
-            case EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS + 1: // 14 - Low word
-                if (this.lastWriteAddress == EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS) {
-                    this.pOutSetpointPercent = combineToFloat(this.tempHighWord, value);
-                    LOG.info("EVN SET P-out Setpoint = {} %", this.pOutSetpointPercent);
-                }
-                this.lastWriteAddress = -1;
-                break;
-
-            case EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS: // 15 - High word
-                this.tempHighWord = value;
-                this.lastWriteAddress = address;
-                break;
-
-            case EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS + 1: // 16 - Low word
-                if (this.lastWriteAddress == EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS) {
-                    this.pOutSetpointKw = combineToFloat(this.tempHighWord, value);
-                    LOG.info("EVN SET P-out Setpoint = {} kW", this.pOutSetpointKw);
-                }
-                this.lastWriteAddress = -1;
-                break;
-
-            // ========== Q-out Control ==========
-            case EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS: // 12
-                this.qOutEnabled = value;
-                LOG.info("EVN SET Q-out Enable = {} ({})", value, value == 0 ? "Disabled" : "Enabled");
-                break;
-
-            case EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS: // 17 - High word
-                this.tempHighWord = value;
-                this.lastWriteAddress = address;
-                break;
-
-            case EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS + 1: // 18 - Low word
-                if (this.lastWriteAddress == EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS) {
-                    this.qOutSetpointPercent = combineToFloat(this.tempHighWord, value);
-                    LOG.info("EVN SET Q-out Setpoint = {} %", this.qOutSetpointPercent);
-                }
-                this.lastWriteAddress = -1;
-                break;
-
-            case EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS: // 19 - High word
-                this.tempHighWord = value;
-                this.lastWriteAddress = address;
-                break;
-
-            case EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS + 1: // 20 - Low word
-                if (this.lastWriteAddress == EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS) {
-                    this.qOutSetpointKvar = combineToFloat(this.tempHighWord, value);
-                    LOG.info("EVN SET Q-out Setpoint = {} kvar", this.qOutSetpointKvar);
-                }
-                this.lastWriteAddress = -1;
-                break;
-
-            default:
-                LOG.warn("EVN WRITE to unmapped address: {}", address);
-        }
-    }
-
-    /**
-     * Combine high and low word to IEEE-754 float.
-     */
-    private float combineToFloat(int highWord, int lowWord) {
-        int intBits = (highWord << 16) | (lowWord & 0xFFFF);
-        return Float.intBitsToFloat(intBits);
-    }
-
-    // ==================== GETTERS FOR EVN COMMANDS ====================
-
-    /** Is P-out control enabled by EVN? */
-    public boolean isPOutEnabled() {
-        return this.pOutEnabled != 0;
-    }
-
-    /** Get P-out Setpoint in % (0-100). */
-    public float getPOutSetpointPercent() {
-        return this.pOutSetpointPercent;
-    }
-
-    /** Get P-out Setpoint in kW. */
-    public float getPOutSetpointKw() {
-        return this.pOutSetpointKw;
-    }
-
-    /** Is Q-out control enabled by EVN? */
-    public boolean isQOutEnabled() {
-        return this.qOutEnabled != 0;
-    }
-
-    /** Get Q-out Setpoint in % (-100 to +100). */
-    public float getQOutSetpointPercent() {
-        return this.qOutSetpointPercent;
-    }
-
-    /** Get Q-out Setpoint in kvar. */
-    public float getQOutSetpointKvar() {
-        return this.qOutSetpointKvar;
-    }
-
-    // ==================== Register counts ====================
+    // ==================== FC03 - Read Holding Registers ====================
+    // ==================== FC06/FC16 - Write Holding Registers ====================
+    // 
+    // CRITICAL: getRegister() must return the SAME SimpleRegister object from our array.
+    // When j2mod receives FC06/FC16, it:
+    //   1. Calls getRegister(address) to get the Register object
+    //   2. Calls register.setValue(newValue) on that object
+    // Since we return the SAME object from holdingRegisters[], the value is stored!
 
     @Override
-    public int getInputRegisterCount() {
-        return 200; // Extended for future use
+    public synchronized Register getRegister(int ref) throws IllegalAddressException {
+        if (ref < 0 || ref >= MAX_REGISTER_ADDRESS) {
+            LOG.warn("EVN getRegister({}) - Address out of range", ref);
+            throw new IllegalAddressException("Address " + ref + " out of range (0-" + (MAX_REGISTER_ADDRESS - 1) + ")");
+        }
+
+        // Return the SAME Register object - this is critical for FC06/FC16 to work!
+        // j2mod will call setValue() on this object to store the written value.
+        LOG.debug("EVN getRegister({}) - returning holding register (current value={})",
+                ref, this.holdingRegisters[ref].getValue());
+        return this.holdingRegisters[ref];
+    }
+
+    @Override
+    public synchronized Register[] getRegisterRange(int offset, int count) throws IllegalAddressException {
+        LOG.debug("EVN getRegisterRange({}, {}) - Holding Registers", offset, count);
+
+        if (offset < 0 || offset + count > MAX_REGISTER_ADDRESS) {
+            throw new IllegalAddressException("Address range " + offset + "-" + (offset + count - 1) + " out of range");
+        }
+
+        Register[] result = new Register[count];
+        for (int i = 0; i < count; i++) {
+            // Return the SAME Register objects from our array
+            result[i] = this.holdingRegisters[offset + i];
+        }
+        return result;
     }
 
     @Override
     public int getRegisterCount() {
-        return 200; // Extended for write registers
+        return MAX_REGISTER_ADDRESS;
     }
 
-    // ==================== Not implemented methods ====================
+    // ==================== GETTERS FOR EVN COMMANDS ====================
+    // Read values that were written by EVN via FC06/FC16
+
+    /**
+     * Get value from a holding register.
+     */
+    private int getHoldingRegisterValue(int address) {
+        if (address < 0 || address >= MAX_REGISTER_ADDRESS) {
+            return 0;
+        }
+        return this.holdingRegisters[address].getValue();
+    }
+
+    /**
+     * Get float value from 2 consecutive holding registers.
+     */
+    private float getHoldingRegisterFloat(int baseAddress) {
+        if (baseAddress < 0 || baseAddress + 1 >= MAX_REGISTER_ADDRESS) {
+            return 0f;
+        }
+        int highWord = this.holdingRegisters[baseAddress].getValue();
+        int lowWord = this.holdingRegisters[baseAddress + 1].getValue();
+        int intBits = (highWord << 16) | (lowWord & 0xFFFF);
+        return Float.intBitsToFloat(intBits);
+    }
+
+    /** Is P-out control enabled by EVN? */
+    public boolean isPOutEnabled() {
+        int value = getHoldingRegisterValue(EvnWriteRegisters.P_OUT_ENABLE_ADDRESS);
+        return value != 0;
+    }
+
+    /** Get P-out Setpoint in % (0-100). */
+    public float getPOutSetpointPercent() {
+        return getHoldingRegisterFloat(EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS);
+    }
+
+    /** Get P-out Setpoint in kW. */
+    public float getPOutSetpointKw() {
+        return getHoldingRegisterFloat(EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS);
+    }
+
+    /** Is Q-out control enabled by EVN? */
+    public boolean isQOutEnabled() {
+        int value = getHoldingRegisterValue(EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS);
+        return value != 0;
+    }
+
+    /** Get Q-out Setpoint in % (-100 to +100). */
+    public float getQOutSetpointPercent() {
+        return getHoldingRegisterFloat(EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS);
+    }
+
+    /** Get Q-out Setpoint in kvar. */
+    public float getQOutSetpointKvar() {
+        return getHoldingRegisterFloat(EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS);
+    }
+
+    // ==================== Debug logging ====================
+
+    /**
+     * Log all control register values for debugging.
+     */
+    public void logControlRegisterValues() {
+        LOG.info("=== EVN Control Register Values (written by FC06/FC16) ===");
+        LOG.info("P-out Enable (Reg {}): {} (raw=0x{})",
+                EvnWriteRegisters.P_OUT_ENABLE_ADDRESS,
+                isPOutEnabled() ? "ENABLED" : "DISABLED",
+                String.format("%04X", getHoldingRegisterValue(EvnWriteRegisters.P_OUT_ENABLE_ADDRESS)));
+        LOG.info("P-out % (Reg {}-{}): {} %",
+                EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS,
+                EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS + 1,
+                getPOutSetpointPercent());
+        LOG.info("P-out kW (Reg {}-{}): {} kW",
+                EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS,
+                EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS + 1,
+                getPOutSetpointKw());
+        LOG.info("Q-out Enable (Reg {}): {} (raw=0x{})",
+                EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS,
+                isQOutEnabled() ? "ENABLED" : "DISABLED",
+                String.format("%04X", getHoldingRegisterValue(EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS)));
+        LOG.info("Q-out % (Reg {}-{}): {} %",
+                EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS,
+                EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS + 1,
+                getQOutSetpointPercent());
+        LOG.info("Q-out kvar (Reg {}-{}): {} kvar",
+                EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS,
+                EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS + 1,
+                getQOutSetpointKvar());
+        LOG.info("=========================================================");
+    }
+
+    // ==================== Not implemented (coils, files, etc.) ====================
 
     @Override
     public DigitalOut[] getDigitalOutRange(int offset, int count) {

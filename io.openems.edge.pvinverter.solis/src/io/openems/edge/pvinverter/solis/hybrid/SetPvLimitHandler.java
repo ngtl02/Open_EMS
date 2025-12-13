@@ -12,12 +12,19 @@ import io.openems.edge.common.channel.IntegerWriteChannel;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 import io.openems.edge.pvinverter.solis.hybrid.PvInverterSolisHybrid.ChannelId;
 
+/**
+ * SetPvLimitHandler for Solis Hybrid inverter.
+ * 
+ * Input: Reads power limit from ACTIVE_POWER_LIMIT channel (in Watts).
+ * Output: Writes scaled value to ACTIVE_POWER_LIMIT channel (Modbus register).
+ * 
+ * Solis Hybrid uses 1 unit = 10W for the power limit register.
+ */
 public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
 	private final Logger log = LoggerFactory.getLogger(SetPvLimitHandler.class);
 	private final PvInverterSolisHybridImpl parent;
 	private final ManagedSymmetricPvInverter.ChannelId channelId;
-	private int remote_ctrl = 1;
 	private Integer lastPLimitPerc = null;
 	private LocalDateTime lastPLimitPercTime = LocalDateTime.MIN;
 
@@ -28,46 +35,26 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 
 	@Override
 	public void run() throws OpenemsNamedException {
-		// Check PERCENT channel first (priority)
-		IntegerWriteChannel percentChannel = this.parent
-				.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
-		var percentOpt = percentChannel.getNextWriteValueAndReset();
-
-		// Check VALUE channel (W)
+		// ONLY read from VALUE channel (W) - this is the input from EVN controller
+		// Solis Hybrid's ACTIVE_POWER_LIMIT is the INPUT channel
 		IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
 		var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-		int pLimitPerc;
-		int power;
+		if (!valueOpt.isPresent()) {
+			// No command from EVN - do nothing, let the last value persist
+			return;
+		}
 
-		if (percentOpt.isPresent()) {
-			// EVN sent PERCENT - calculate value (W) from percent
-			pLimitPerc = percentOpt.get();
+		// EVN sent VALUE (W) - calculate percentage
+		int power = valueOpt.get();
+		int pLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
 
-			// keep percentage in range [0, 100]
-			if (pLimitPerc > 100) {
-				pLimitPerc = 100;
-			}
-			if (pLimitPerc < 0) {
-				pLimitPerc = 0;
-			}
-			power = (int) (this.parent.config.maxActivePower() * pLimitPerc / 100.0);
-		} else if (valueOpt.isPresent()) {
-			// EVN sent VALUE (W) - use it directly and calculate percent
-			power = valueOpt.get();
-			pLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
-
-			// keep percentage in range [0, 100]
-			if (pLimitPerc > 100) {
-				pLimitPerc = 100;
-			}
-			if (pLimitPerc < 0) {
-				pLimitPerc = 0;
-			}
-		} else {
-			// No command - reset to 100%
-			power = this.parent.config.maxActivePower();
+		// keep percentage in range [0, 100]
+		if (pLimitPerc > 100) {
 			pLimitPerc = 100;
+		}
+		if (pLimitPerc < 0) {
+			pLimitPerc = 0;
 		}
 
 		if (!Objects.equals(this.lastPLimitPerc, pLimitPerc) || this.lastPLimitPercTime

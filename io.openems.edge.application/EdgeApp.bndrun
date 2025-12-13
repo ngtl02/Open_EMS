@@ -504,3 +504,4 @@
 	io.openems.edge.pvinverter.solis;version=snapshot,\
 	io.openems.edge.pvinverter.sungrow;version=snapshot,\
 	io.openems.edge.network.manager;version=snapshot
+-resolve: manual

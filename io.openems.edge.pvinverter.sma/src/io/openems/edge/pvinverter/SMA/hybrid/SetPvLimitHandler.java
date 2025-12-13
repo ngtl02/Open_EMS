@@ -12,10 +12,23 @@ import io.openems.edge.common.channel.IntegerWriteChannel;
 import io.openems.edge.pvinverter.SMA.hybrid.PvInverterSMAHybrid.ChannelId;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 
+/**
+ * SetPvLimitHandler for SMA Hybrid inverter.
+ * 
+ * Uses SMA Modbus registers:
+ * - 40210: P operating mode (1077=Watt mode, 1078=Percent mode)
+ * - 40211: P setpoint in W (if mode=1077)
+ * - 40212: P setpoint in % (if mode=1078)
+ * 
+ * Input: Reads power limit from ACTIVE_POWER_LIMIT channel (in Watts).
+ * Output: Writes to SMA Modbus registers.
+ * 
+ * IMPORTANT: Do NOT read from ACTIVE_POWER_LIMIT_PERCENT as input because
+ * writing to the same channel we read from would cause a feedback loop.
+ */
 public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
 	private static final int P_OPERATING_MODE_WATT = 1077; // Active power limitation P in W
-	private static final int P_OPERATING_MODE_PERCENT = 1078; // Act. power lim. as % of Pmax
 
 	private final Logger log = LoggerFactory.getLogger(SetPvLimitHandler.class);
 	private final PvInverterSMAHybridImpl parent;
@@ -30,64 +43,33 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 
 	@Override
 	public void run() throws OpenemsNamedException {
-		// Check PERCENT channel first (priority)
-		IntegerWriteChannel percentChannel = this.parent
-				.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
-		var percentOpt = percentChannel.getNextWriteValueAndReset();
-
-		// Check VALUE channel (W)
+		// ONLY read from VALUE channel (W) - this is the input from EVN controller
+		// DO NOT read from ACTIVE_POWER_LIMIT_PERCENT as it's mapped to Modbus register
+		// and would cause feedback loop
 		IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
 		var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-		int pLimit;
-		int operatingMode;
-		boolean usePercent;
-
-		if (percentOpt.isPresent()) {
-			// EVN sent PERCENT - use percent mode
-			pLimit = percentOpt.get();
-			operatingMode = P_OPERATING_MODE_PERCENT;
-			usePercent = true;
-
-			// keep percentage in range [0, 100]
-			if (pLimit > 100) {
-				pLimit = 100;
-			}
-			if (pLimit < 0) {
-				pLimit = 0;
-			}
-		} else if (valueOpt.isPresent()) {
-			// EVN sent VALUE (W) - use watt mode
-			pLimit = valueOpt.get();
-			operatingMode = P_OPERATING_MODE_WATT;
-			usePercent = false;
-		} else {
-			// No command - reset to 100%
-			pLimit = 100;
-			operatingMode = P_OPERATING_MODE_PERCENT;
-			usePercent = true;
+		if (!valueOpt.isPresent()) {
+			// No command from EVN - do nothing, let the last value persist
+			return;
 		}
+
+		// EVN sent VALUE (W) - use Watt mode
+		int pLimit = valueOpt.get();
 
 		if (!Objects.equals(this.lastPLimit, pLimit) || this.lastPLimitTime
 				.isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
 			// Value needs to be set
-			this.parent.logInfo(this.log, "Apply P limit: " + pLimit + (usePercent ? " %" : " W")
-					+ " (mode=" + operatingMode + ")");
+			this.parent.logInfo(this.log, "Apply P limit: " + pLimit + " W (mode=" + P_OPERATING_MODE_WATT + ")");
 
-			// Set operating mode first (40210)
+			// Set operating mode to Watt mode (40210)
 			IntegerWriteChannel pModeChannel = this.parent.channel(ChannelId.P_OPERATING_MODE);
-			pModeChannel.setNextWriteValue(operatingMode);
+			pModeChannel.setNextWriteValue(P_OPERATING_MODE_WATT);
 
-			// Write setpoint to appropriate channel
-			if (usePercent) {
-				IntegerWriteChannel pPercentCh = this.parent
-						.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
-				pPercentCh.setNextWriteValue(pLimit);
-			} else {
-				IntegerWriteChannel pValueCh = this.parent
-						.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT);
-				pValueCh.setNextWriteValue(pLimit);
-			}
+			// Write power value in Watts to ACTIVE_POWER_LIMIT (40211)
+			IntegerWriteChannel pValueCh = this.parent
+					.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT);
+			pValueCh.setNextWriteValue(pLimit);
 
 			IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
 			watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());

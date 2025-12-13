@@ -179,13 +179,20 @@ public class ControllerApiModbusEvnImpl extends AbstractOpenemsComponent
             return;
         }
 
+        // Debug: Log control register values periodically (every 10 seconds approx)
+        if (System.currentTimeMillis() % 10000 < 1000) {
+            this.evnProcessImage.logControlRegisterValues();
+        }
+
         // Process P-out control if enabled
         if (this.evnProcessImage.isPOutEnabled()) {
+            LOG.info("EVN P-out Control ENABLED - Processing...");
             applyPOutControl();
         }
 
         // Process Q-out control if enabled
         if (this.evnProcessImage.isQOutEnabled()) {
+            LOG.info("EVN Q-out Control ENABLED - Processing...");
             applyQOutControl();
         }
     }
@@ -258,6 +265,12 @@ public class ControllerApiModbusEvnImpl extends AbstractOpenemsComponent
 
         if (usePercentMode) {
             // === PERCENTAGE MODE ===
+            // Only apply if value changed
+            if (!Float.isNaN(this.lastAppliedActivePower)
+                    && Math.abs(pPercent - this.lastAppliedActivePower) < 0.1f) {
+                return; // Value unchanged, skip
+            }
+
             // Apply percentage directly to each inverter based on their maxActivePower
             LOG.info("EVN P-out: Applying {}% limit to {} inverters", pPercent, activeInverters.size());
 
@@ -351,6 +364,12 @@ public class ControllerApiModbusEvnImpl extends AbstractOpenemsComponent
 
         if (usePercentMode) {
             // === PERCENTAGE MODE ===
+            // Only apply if value changed
+            if (!Float.isNaN(this.lastAppliedReactivePower)
+                    && Math.abs(qPercent - this.lastAppliedReactivePower) < 0.1f) {
+                return; // Value unchanged, skip
+            }
+
             // Apply percentage directly to each inverter based on their maxReactivePower
             LOG.info("EVN Q-out: Applying {}% limit to {} inverters", qPercent, activeInverters.size());
 

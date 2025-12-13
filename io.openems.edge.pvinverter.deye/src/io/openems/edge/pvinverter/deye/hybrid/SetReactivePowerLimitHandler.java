@@ -14,7 +14,12 @@ import io.openems.edge.pvinverter.deye.hybrid.PvInverterDeyeHybrid.ChannelId;
 
 /**
  * Handler for setting Reactive Power Limit on Deye inverter.
- * Converts absolute var values to percentage and writes to Modbus register.
+ * 
+ * Input: Reads from REACTIVE_POWER_LIMIT channel (in var).
+ * Output: Writes scaled percentage to REACTIVE_POWER_LIMIT_PERCENT channel (Modbus register 1118).
+ * 
+ * IMPORTANT: Do NOT read from REACTIVE_POWER_LIMIT_PERCENT as input because it's mapped
+ * to the same Modbus register we write to, which would cause a feedback loop.
  */
 public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
@@ -33,53 +38,38 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
 
     @Override
     public void run() throws OpenemsNamedException {
-        // Check PERCENT channel first (priority)
-        IntegerWriteChannel percentChannel = this.parent
-                .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT_PERCENT);
-        var percentOpt = percentChannel.getNextWriteValueAndReset();
-
-        // Check VALUE channel (var)
+        // ONLY read from VALUE channel (var) - this is the input from EVN controller
+        // DO NOT read from REACTIVE_POWER_LIMIT_PERCENT as it's mapped to Modbus register
+        // and would cause feedback loop
         IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
         var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-        int qLimitPerc;
-        int power;
+        if (!valueOpt.isPresent()) {
+            // No command from EVN - do nothing, let the last value persist
+            return;
+        }
 
-        if (percentOpt.isPresent()) {
-            // EVN sent PERCENT directly - use it as-is
-            qLimitPerc = percentOpt.get();
-            power = (int) (this.parent.config.maxActivePower() * qLimitPerc / 100.0);
+        // EVN sent VALUE (var) - calculate percentage
+        int power = valueOpt.get();
+        int qLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
 
-            // keep percentage in range [0, 100]
-            if (qLimitPerc > 100) {
-                qLimitPerc = 100;
-            }
-            if (qLimitPerc < 0) {
-                qLimitPerc = 0;
-            }
-        } else if (valueOpt.isPresent()) {
-            // EVN sent VALUE (var) - calculate percentage
-            power = valueOpt.get();
-            // Calculate percentage based on max reactive power (same as max active power)
-            qLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
-
-            // keep percentage in range [0, 100]
-            if (qLimitPerc > 100) {
-                qLimitPerc = 100;
-            }
-            if (qLimitPerc < 0) {
-                qLimitPerc = 0;
-            }
-        } else {
-            // No command - reset to 100%
-            power = this.parent.config.maxActivePower();
+        // keep percentage in range [0, 100]
+        if (qLimitPerc > 100) {
             qLimitPerc = 100;
+        }
+        if (qLimitPerc < 0) {
+            qLimitPerc = 0;
         }
 
         if (!Objects.equals(this.lastQLimitPerc, qLimitPerc) || this.lastQLimitPercTime
                 .isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
+
+            // Deye uses 0.1% per unit (gain=10), so multiply by 10
+            int scaledValue = qLimitPerc * 10;
+
             // Value needs to be set
-            this.parent.logInfo(this.log, "Apply new reactive power limit: " + power + " var (" + qLimitPerc + " %)");
+            this.parent.logInfo(this.log,
+                    "Apply Q limit: " + power + " var (" + qLimitPerc + " %) -> register 1118: " + scaledValue);
 
             IntegerWriteChannel qRemoteCtrl = this.parent.channel(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL);
             qRemoteCtrl.setNextWriteValue(0);
@@ -88,9 +78,11 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
                     .channel(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL_Q);
             qRemoteCtrlQ.setNextWriteValue(0);
 
-            IntegerWriteChannel reactivePowerLimitCh = this.parent
+            // Write scaled value to Modbus register 1118 via REACTIVE_POWER_LIMIT_PERCENT
+            // This is OUTPUT only - we never read from this channel
+            IntegerWriteChannel modbusChannel = this.parent
                     .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT_PERCENT);
-            reactivePowerLimitCh.setNextWriteValue(qLimitPerc * 10); // Deye uses 0.1% per unit (gain=10)
+            modbusChannel.setNextWriteValue(scaledValue);
 
             IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
             watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());
@@ -99,5 +91,4 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
             this.lastQLimitPercTime = LocalDateTime.now();
         }
     }
-
 }

@@ -16,11 +16,11 @@ import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
  * 
  * Uses Sungrow Modbus registers:
  * - 5036: Reactive power adjustment switch:
- *         0x55=OFF (PF returns to 1, Q% returns to 0)
- *         0xA1=Power factor setting valid
- *         0xA2=Reactive power percentage setting valid
- *         0xA3=Enable Q(P) curve
- *         0xA4=Enable Q(U) curve
+ * 0x55=OFF (PF returns to 1, Q% returns to 0)
+ * 0xA1=Power factor setting valid
+ * 0xA2=Reactive power percentage setting valid
+ * 0xA3=Enable Q(P) curve
+ * 0xA4=Enable Q(U) curve
  * - 5037: Reactive power percentage setting (0-1000 or 0 to -1000, in 0.1%)
  * - 5040: Reactive power adjustment (in 0.1kvar)
  */
@@ -54,16 +54,17 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
         IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
         var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-        int qLimitPerc;  // 0-1000 scale (0.1%), can be negative
-        int powerKvar;   // in 0.1kvar
+        int qLimitPerc; // 0-1000 scale (0.1%), can be negative
+        int powerKvar; // in 0.1kvar
 
         int maxActivePower = this.parent.getConfig().maxActivePower();
 
         if (percentOpt.isPresent()) {
-            // EVN sent PERCENT directly (0-100 or negative) - convert to 0-1000 (0.1% scale)
+            // EVN sent PERCENT directly (0-100 or negative) - convert to 0-1000 (0.1%
+            // scale)
             int inputPercent = percentOpt.get();
-            qLimitPerc = inputPercent * 10;  // Convert to 0.1% scale
-            powerKvar = (int) (maxActivePower * inputPercent / 100.0 / 100.0);  // Convert var to 0.1kvar
+            qLimitPerc = inputPercent * 10; // Convert to 0.1% scale
+            powerKvar = (int) (maxActivePower * inputPercent / 100.0 / 100.0); // Convert var to 0.1kvar
 
             // keep percentage in range [-1000, 1000]
             if (qLimitPerc > 1000) {
@@ -75,8 +76,8 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
         } else if (valueOpt.isPresent()) {
             // EVN sent VALUE (var) - calculate percentage
             int powerVar = valueOpt.get();
-            powerKvar = powerVar / 100;  // Convert var to 0.1kvar
-            qLimitPerc = (int) ((double) powerVar / (double) maxActivePower * 1000.0);  // 0.1% scale
+            powerKvar = powerVar / 100; // Convert var to 0.1kvar
+            qLimitPerc = (int) ((double) powerVar / (double) maxActivePower * 1000.0); // 0.1% scale
 
             // keep percentage in range [-1000, 1000]
             if (qLimitPerc > 1000) {
@@ -86,15 +87,15 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
                 qLimitPerc = -1000;
             }
         } else {
-            // No command - reset to 0% (no reactive power)
-            qLimitPerc = 0;
-            powerKvar = 0;
+            // No command - do nothing, let the last value persist
+            return;
         }
 
         if (!Objects.equals(this.lastQLimitPerc, qLimitPerc) || this.lastQLimitPercTime
                 .isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
             // Value needs to be set
-            this.parent.logInfo(this.log, "Apply new Q limit: " + (powerKvar * 100) + " var (" + (qLimitPerc / 10.0) + " %)");
+            this.parent.logInfo(this.log,
+                    "Apply new Q limit: " + (powerKvar * 100) + " var (" + (qLimitPerc / 10.0) + " %)");
 
             // Enable reactive power percentage mode (register 5036)
             IntegerWriteChannel qSwitch = this.parent.channel(PvInverterSungrow.ChannelId.Q_ADJUSTMENT_SWITCH);

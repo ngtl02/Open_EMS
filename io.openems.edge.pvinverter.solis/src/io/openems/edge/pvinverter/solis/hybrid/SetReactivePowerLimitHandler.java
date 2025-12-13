@@ -10,10 +10,15 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.function.ThrowingRunnable;
 import io.openems.edge.common.channel.IntegerWriteChannel;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
+import io.openems.edge.pvinverter.solis.hybrid.PvInverterSolisHybrid.ChannelId;
 
 /**
  * Handler for applying Reactive Power Limit (Q) to Solis Hybrid inverter.
- * Similar to SetPvLimitHandler but for reactive power (var).
+ * 
+ * Input: Reads from REACTIVE_POWER_LIMIT channel (in var).
+ * Output: Writes scaled value to REACTIVE_POWER_LIMIT channel (Modbus register).
+ * 
+ * Solis Hybrid uses 1 unit = 10Var for the reactive power limit register.
  */
 public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
@@ -28,38 +33,20 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
 
     @Override
     public void run() throws OpenemsNamedException {
-        // Check PERCENT channel first (priority)
-        IntegerWriteChannel percentChannel = this.parent
-                .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT_PERCENT);
-        var percentOpt = percentChannel.getNextWriteValueAndReset();
-
-        // Check VALUE channel (var)
+        // ONLY read from VALUE channel (var) - this is the input from EVN controller
+        // DO NOT read from percentage channel as it could cause feedback loop
         IntegerWriteChannel valueChannel = this.parent
                 .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
         var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-        int reactivePowerVar;
-        int qLimitPerc;
-
-        if (percentOpt.isPresent()) {
-            // EVN sent PERCENT - calculate value (var) from percent
-            qLimitPerc = percentOpt.get();
-
-            // keep percentage in range [0, 100]
-            if (qLimitPerc > 100) {
-                qLimitPerc = 100;
-            }
-            if (qLimitPerc < 0) {
-                qLimitPerc = 0;
-            }
-            reactivePowerVar = (int) (this.parent.config.maxActivePower() * qLimitPerc / 100.0);
-        } else if (valueOpt.isPresent()) {
-            // EVN sent VALUE (var) - use it directly
-            reactivePowerVar = valueOpt.get();
-            qLimitPerc = (int) ((double) reactivePowerVar / (double) this.parent.config.maxActivePower() * 100.0);
-        } else {
-            return; // No command to apply
+        if (!valueOpt.isPresent()) {
+            // No command from EVN - do nothing, let the last value persist
+            return;
         }
+
+        // EVN sent VALUE (var) - use it directly
+        int reactivePowerVar = valueOpt.get();
+        int qLimitPerc = (int) ((double) reactivePowerVar / (double) this.parent.config.maxActivePower() * 100.0);
 
         // Only apply if value changed or timeout reached (watchdog refresh)
         if (!Objects.equals(this.lastQLimitVar, reactivePowerVar) || this.lastQLimitTime
@@ -71,10 +58,13 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
             this.parent.logInfo(this.log,
                     "Apply Q limit: " + reactivePowerVar + " var (" + qLimitPerc + " %) -> register: " + scaledValue);
 
-            // Write scaled value to register 43134
+            // Write scaled value to Modbus register 43134 via REACTIVE_POWER_LIMIT channel
             IntegerWriteChannel reactivePowerLimitCh = this.parent
                     .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
             reactivePowerLimitCh.setNextWriteValue(scaledValue); // Scaled: 1 = 10Var
+
+            IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
+            watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());
 
             this.lastQLimitVar = reactivePowerVar;
             this.lastQLimitTime = LocalDateTime.now();

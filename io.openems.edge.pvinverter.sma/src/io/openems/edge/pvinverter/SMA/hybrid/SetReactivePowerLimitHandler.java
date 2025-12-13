@@ -14,11 +14,15 @@ import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 
 /**
  * Handler for applying Reactive Power Limit (Q) to SMA Hybrid inverter.
- * SMA uses registers 40200=mode, 40202=VAr, 40204=%.
+ * 
+ * Input: Reads from REACTIVE_POWER_LIMIT channel (in var).
+ * Output: Writes to SMA registers 40200=mode, 40202=VAr.
+ * 
+ * IMPORTANT: Do NOT read from REACTIVE_POWER_LIMIT_PERCENT as input because
+ * writing to channels we also read from would cause a feedback loop.
  */
 public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
-    private static final int Q_OPERATING_MODE_DIRECT = 1070; // Q direct specification
     private static final int Q_OPERATING_MODE_KVAR = 1071; // Q const in kvar
 
     private final Logger log = LoggerFactory.getLogger(SetReactivePowerLimitHandler.class);
@@ -32,63 +36,34 @@ public class SetReactivePowerLimitHandler implements ThrowingRunnable<OpenemsNam
 
     @Override
     public void run() throws OpenemsNamedException {
-        // Check PERCENT channel first (priority)
-        IntegerWriteChannel percentChannel = this.parent
-                .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT_PERCENT);
-        var percentOpt = percentChannel.getNextWriteValueAndReset();
-
-        // Check VALUE channel (var)
+        // ONLY read from VALUE channel (var) - this is the input from EVN controller
+        // DO NOT read from REACTIVE_POWER_LIMIT_PERCENT as it's mapped to Modbus register
+        // and would cause feedback loop
         IntegerWriteChannel valueChannel = this.parent
                 .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
         var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-        int qLimit;
-        int operatingMode;
-        boolean usePercent;
-
-        if (percentOpt.isPresent()) {
-            // EVN sent PERCENT - use percent mode (via direct spec with calculated var)
-            int percent = percentOpt.get();
-
-            // keep percentage in range [0, 100]
-            if (percent > 100) {
-                percent = 100;
-            }
-            if (percent < 0) {
-                percent = 0;
-            }
-            qLimit = percent;
-            operatingMode = Q_OPERATING_MODE_DIRECT;
-            usePercent = true;
-        } else if (valueOpt.isPresent()) {
-            // EVN sent VALUE (var) - use kvar mode
-            qLimit = valueOpt.get();
-            operatingMode = Q_OPERATING_MODE_KVAR;
-            usePercent = false;
-        } else {
-            return; // No command to apply
+        if (!valueOpt.isPresent()) {
+            // No command from EVN - do nothing, let the last value persist
+            return;
         }
+
+        // EVN sent VALUE (var) - use kvar mode
+        int qLimit = valueOpt.get();
 
         if (!Objects.equals(this.lastQLimit, qLimit) || this.lastQLimitTime
                 .isBefore(LocalDateTime.now().minusSeconds(150))) {
 
-            this.parent.logInfo(this.log, "Apply Q limit: " + qLimit + (usePercent ? " %" : " var")
-                    + " (mode=" + operatingMode + ")");
+            this.parent.logInfo(this.log, "Apply Q limit: " + qLimit + " var (mode=" + Q_OPERATING_MODE_KVAR + ")");
 
-            // Set operating mode first (40200)
+            // Set operating mode to kvar mode (40200)
             IntegerWriteChannel qModeChannel = this.parent.channel(ChannelId.Q_OPERATING_MODE);
-            qModeChannel.setNextWriteValue(operatingMode);
+            qModeChannel.setNextWriteValue(Q_OPERATING_MODE_KVAR);
 
-            // Write setpoint to appropriate channel
-            if (usePercent) {
-                IntegerWriteChannel qPercentCh = this.parent
-                        .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT_PERCENT);
-                qPercentCh.setNextWriteValue(qLimit);
-            } else {
-                IntegerWriteChannel qValueCh = this.parent
-                        .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
-                qValueCh.setNextWriteValue(qLimit);
-            }
+            // Write to REACTIVE_POWER_LIMIT (40202)
+            IntegerWriteChannel qValueCh = this.parent
+                    .channel(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT);
+            qValueCh.setNextWriteValue(qLimit);
 
             this.lastQLimit = qLimit;
             this.lastQLimitTime = LocalDateTime.now();

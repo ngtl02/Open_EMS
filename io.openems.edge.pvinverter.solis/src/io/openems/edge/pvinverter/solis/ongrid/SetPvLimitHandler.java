@@ -12,6 +12,15 @@ import io.openems.edge.common.channel.IntegerWriteChannel;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 import io.openems.edge.pvinverter.solis.hybrid.PvInverterSolisHybrid.ChannelId;
 
+/**
+ * SetPvLimitHandler for Solis OnGrid inverter.
+ * 
+ * Input: Reads power limit from ACTIVE_POWER_LIMIT channel (in Watts).
+ * Output: Writes to registers 3070 (enable), 3081 (power limit).
+ * 
+ * IMPORTANT: Do NOT read from ACTIVE_POWER_LIMIT_PERCENT as input because
+ * writing to the same channel we read from would cause a feedback loop.
+ */
 public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
 	private final Logger log = LoggerFactory.getLogger(SetPvLimitHandler.class);
@@ -28,46 +37,26 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 
 	@Override
 	public void run() throws OpenemsNamedException {
-		// Check PERCENT channel first (priority)
-		IntegerWriteChannel percentChannel = this.parent
-				.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
-		var percentOpt = percentChannel.getNextWriteValueAndReset();
-
-		// Check VALUE channel (W)
+		// ONLY read from VALUE channel (W) - this is the input from EVN controller
+		// DO NOT read from percentage channel as it could cause feedback loop
 		IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
 		var valueOpt = valueChannel.getNextWriteValueAndReset();
 
-		int pLimitPerc;
-		int power;
+		if (!valueOpt.isPresent()) {
+			// No command from EVN - do nothing, let the last value persist
+			return;
+		}
 
-		if (percentOpt.isPresent()) {
-			// EVN sent PERCENT - calculate value (W) from percent
-			pLimitPerc = percentOpt.get();
+		// EVN sent VALUE (W) - calculate percentage
+		int power = valueOpt.get();
+		int pLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
 
-			// keep percentage in range [0, 100]
-			if (pLimitPerc > 100) {
-				pLimitPerc = 100;
-			}
-			if (pLimitPerc < 0) {
-				pLimitPerc = 0;
-			}
-			power = (int) (this.parent.config.maxActivePower() * pLimitPerc / 100.0);
-		} else if (valueOpt.isPresent()) {
-			// EVN sent VALUE (W) - use it directly and calculate percent
-			power = valueOpt.get();
-			pLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
-
-			// keep percentage in range [0, 100]
-			if (pLimitPerc > 100) {
-				pLimitPerc = 100;
-			}
-			if (pLimitPerc < 0) {
-				pLimitPerc = 0;
-			}
-		} else {
-			// No command - reset to 100%
-			power = this.parent.config.maxActivePower();
+		// keep percentage in range [0, 100]
+		if (pLimitPerc > 100) {
 			pLimitPerc = 100;
+		}
+		if (pLimitPerc < 0) {
+			pLimitPerc = 0;
 		}
 
 		if (!Objects.equals(this.lastPLimitPerc, pLimitPerc) || this.lastPLimitPercTime
@@ -78,11 +67,6 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 			// Enable power limitation (register 3070): 0xAA = ON
 			IntegerWriteChannel pRemoteCtrl = this.parent.channel(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL);
 			pRemoteCtrl.setNextWriteValue(0xAA);
-
-			// Write percentage to register 3052: 1% = 100, so 100% = 10000
-			IntegerWriteChannel activePowerLimitPercCh = this.parent
-					.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT_PERCENT);
-			activePowerLimitPercCh.setNextWriteValue(pLimitPerc * 100); // Solis uses gain=100
 
 			// Write value to register 3081: 1 unit = 10W
 			IntegerWriteChannel activePowerLimitCh = this.parent
