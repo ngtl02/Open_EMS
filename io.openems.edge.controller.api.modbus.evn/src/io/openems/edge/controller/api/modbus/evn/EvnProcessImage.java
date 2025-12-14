@@ -1,5 +1,8 @@
 package io.openems.edge.controller.api.modbus.evn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +19,18 @@ import com.ghgande.j2mod.modbus.procimg.SimpleDigitalOut;
 import com.ghgande.j2mod.modbus.procimg.SimpleInputRegister;
 import com.ghgande.j2mod.modbus.procimg.SimpleRegister;
 
-import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.component.ComponentManager;
 import io.openems.edge.common.component.OpenemsComponent;
+import io.openems.edge.meter.api.ElectricityMeter;
+import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 
 /**
  * Custom Process Image for EVN Modbus TCP.
  * Implements ProcessImage interface to support both READ and WRITE operations.
+ * 
+ * <p>
+ * Uses auto-discovered meters and PV inverters from ComponentManager.
  * 
  * <p>
  * Key mechanism for FC06/FC16 write support:
@@ -35,20 +42,36 @@ import io.openems.edge.common.component.OpenemsComponent;
  * </ul>
  * 
  * <p>
- * FC03: Read Holding Registers - returns control register values (EVN writes here)
- * FC04: Read Input Registers - returns monitoring data from OpenEMS channels
- * FC06: Write Single Register - j2mod writes to our holdingRegisters array
- * FC16: Write Multiple Registers - j2mod writes to our holdingRegisters array
+ * Register Map:
+ * <ul>
+ * <li>1-2: Grid Active Power (kW) - _sum/GridActivePower</li>
+ * <li>3-4: Total Production Power (kW) - _sum/ProductionActivePower</li>
+ * <li>5-6: Production Energy (kWh) - _sum/ProductionActiveEnergy</li>
+ * <li>7-8: Grid Reactive Power (kVar) - _sum/EssReactivePower</li>
+ * <li>9-10: Voltage L1 (V) - first meter's VoltageL1</li>
+ * <li>11: P-out Enable (write)</li>
+ * <li>12: Q-out Enable (write)</li>
+ * <li>13-14: P-out Setpoint % (write)</li>
+ * <li>15-16: P-out Setpoint kW (write)</li>
+ * <li>17-18: Q-out Setpoint % (write)</li>
+ * <li>19-20: Q-out Setpoint kvar (write)</li>
+ * <li>21-22: Frequency (Hz)</li>
+ * <li>23-24: Power Factor</li>
+ * <li>25+: PV Inverter data (4 registers per inverter)</li>
+ * </ul>
  */
 public class EvnProcessImage implements ProcessImage {
 
     private static final Logger LOG = LoggerFactory.getLogger(EvnProcessImage.class);
-    private static final int DEFAULT_INVERTER_COUNT = 10;
-    private static final int MAX_REGISTER_ADDRESS = 200;
+    private static final int MAX_REGISTER_ADDRESS = 500;
+    
+    // Register addresses for inverters start at 25
+    private static final int INVERTER_START_ADDRESS = 25;
+    private static final int REGISTERS_PER_INVERTER = 4;
 
     private final ComponentManager componentManager;
-    private final int inverterCount;
-    private final java.util.List<EvnRegisterMapping> mappings;
+    private final List<ElectricityMeter> meters;
+    private final List<ManagedSymmetricPvInverter> inverters;
 
     /**
      * Holding Registers array - these are the registers that EVN can write to.
@@ -57,24 +80,39 @@ public class EvnProcessImage implements ProcessImage {
      */
     private final SimpleRegister[] holdingRegisters;
 
-    public EvnProcessImage(ComponentManager componentManager) {
-        this(componentManager, DEFAULT_INVERTER_COUNT);
-    }
-
-    public EvnProcessImage(ComponentManager componentManager, int inverterCount) {
+    /**
+     * Constructs EvnProcessImage with auto-discovered components.
+     * 
+     * @param componentManager ComponentManager for reading channel values
+     * @param meters           List of discovered meters
+     * @param inverters        List of discovered PV inverters
+     */
+    public EvnProcessImage(ComponentManager componentManager, 
+                           List<ElectricityMeter> meters,
+                           List<ManagedSymmetricPvInverter> inverters) {
         this.componentManager = componentManager;
-        this.inverterCount = inverterCount;
-        this.mappings = EvnRegisterMapping.getAllMappings(inverterCount);
+        this.meters = new ArrayList<>(meters);
+        this.inverters = new ArrayList<>(inverters);
 
         // Initialize holding registers for control commands
-        // These are SimpleRegister objects which have setValue() method
         this.holdingRegisters = new SimpleRegister[MAX_REGISTER_ADDRESS];
         for (int i = 0; i < MAX_REGISTER_ADDRESS; i++) {
             this.holdingRegisters[i] = new SimpleRegister(0);
         }
 
-        LOG.info("EVN ProcessImage initialized with {} mappings, {} holding registers for write support",
-                mappings.size(), MAX_REGISTER_ADDRESS);
+        LOG.info("EVN ProcessImage initialized with {} meters, {} inverters",
+                this.meters.size(), this.inverters.size());
+        
+        // Log discovered components
+        for (int i = 0; i < this.meters.size(); i++) {
+            LOG.info("  Meter[{}]: {} (alias: {})", i, this.meters.get(i).id(), this.meters.get(i).alias());
+        }
+        for (int i = 0; i < this.inverters.size(); i++) {
+            int addr = INVERTER_START_ADDRESS + (i * REGISTERS_PER_INVERTER);
+            LOG.info("  Inverter[{}]: {} (alias: {}) -> Registers {}-{}", 
+                    i, this.inverters.get(i).id(), this.inverters.get(i).alias(), addr, addr + 3);
+        }
+        
         LOG.info("Control registers: P-out Enable={}, Q-out Enable={}, P-out%={}-{}, P-out kW={}-{}, Q-out%={}-{}, Q-out kvar={}-{}",
                 EvnWriteRegisters.P_OUT_ENABLE_ADDRESS,
                 EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS,
@@ -89,15 +127,10 @@ public class EvnProcessImage implements ProcessImage {
     }
 
     /**
-     * Reads current float value from OpenEMS channel.
+     * Reads a float value from a channel.
      */
-    private float readChannelValue(String componentId, String channelId) {
+    private float readChannelFloat(OpenemsComponent component, String channelId) {
         try {
-            OpenemsComponent component = this.componentManager.getComponent(componentId);
-            if (component == null) {
-                return 0f;
-            }
-
             Channel<?> channel = component.channel(channelId);
             if (channel == null) {
                 return 0f;
@@ -113,35 +146,157 @@ public class EvnProcessImage implements ProcessImage {
                 return ((Number) obj).floatValue();
             }
             return 0f;
-
-        } catch (OpenemsNamedException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return 0f;
         }
     }
 
     /**
-     * Gets float value for a register address.
+     * Reads an integer value from a channel.
      */
-    private float getFloatValueForAddress(int address) {
-        for (EvnRegisterMapping mapping : this.mappings) {
-            int baseAddr = mapping.getAddress();
-            if (address == baseAddr || address == baseAddr + 1) {
-                float rawValue = readChannelValue(mapping.getComponentId(), mapping.getChannelId());
-                return rawValue * mapping.getScaleFactor();
+    private int readChannelInt(OpenemsComponent component, String channelId) {
+        try {
+            Channel<?> channel = component.channel(channelId);
+            if (channel == null) {
+                return 0;
             }
+
+            var value = channel.value();
+            if (!value.isDefined()) {
+                return 0;
+            }
+
+            Object obj = value.get();
+            if (obj instanceof Number) {
+                return ((Number) obj).intValue();
+            }
+            return 0;
+        } catch (IllegalArgumentException e) {
+            return 0;
         }
-        return 0f;
     }
 
     /**
-     * Gets the base address for a register (start of the float).
+     * Gets the first meter or null.
      */
-    private int getBaseAddress(int address) {
-        for (EvnRegisterMapping mapping : this.mappings) {
-            int baseAddr = mapping.getAddress();
-            if (address == baseAddr || address == baseAddr + 1) {
-                return baseAddr;
-            }
+    private ElectricityMeter getFirstMeter() {
+        return this.meters.isEmpty() ? null : this.meters.get(0);
+    }
+
+    /**
+     * Reads monitoring data for a specific register address.
+     * Returns scaled float value in EVN units (kW, V, A, Hz).
+     */
+    private float readMonitoringValue(int address) {
+        ElectricityMeter meter = getFirstMeter();
+        
+        // Static monitoring registers (1-24)
+        switch (address) {
+            case 1: case 2: // Grid Active Power (kW) - _sum
+                try {
+                    OpenemsComponent sum = this.componentManager.getComponent("_sum");
+                    return readChannelFloat(sum, "GridActivePower") * 0.001f; // W -> kW
+                } catch (Exception e) {
+                    return 0f;
+                }
+                
+            case 3: case 4: // Total Production Power (kW) - _sum
+                try {
+                    OpenemsComponent sum = this.componentManager.getComponent("_sum");
+                    return readChannelFloat(sum, "ProductionActivePower") * 0.001f; // W -> kW
+                } catch (Exception e) {
+                    return 0f;
+                }
+                
+            case 5: case 6: // Production Energy (kWh) - _sum
+                try {
+                    OpenemsComponent sum = this.componentManager.getComponent("_sum");
+                    return readChannelFloat(sum, "ProductionActiveEnergy") * 0.001f; // Wh -> kWh
+                } catch (Exception e) {
+                    return 0f;
+                }
+                
+            case 7: case 8: // Grid Reactive Power (kVar) - _sum
+                try {
+                    OpenemsComponent sum = this.componentManager.getComponent("_sum");
+                    return readChannelFloat(sum, "GridReactivePower") * 0.001f; // var -> kVar
+                } catch (Exception e) {
+                    return 0f;
+                }
+                
+            case 9: case 10: // Voltage L1 (V) - first meter
+                if (meter != null) {
+                    return readChannelFloat(meter, "VoltageL1") * 0.001f; // mV -> V
+                }
+                return 0f;
+                
+            case 21: case 22: // Frequency (Hz) - first meter
+                if (meter != null) {
+                    return readChannelFloat(meter, "Frequency") * 0.001f; // mHz -> Hz
+                }
+                return 0f;
+                
+            case 23: case 24: // Power Factor - first meter
+                if (meter != null) {
+                    // Some meters expose Pf in different scales
+                    float pf = readChannelFloat(meter, "Pf");
+                    if (Math.abs(pf) > 1.0f) {
+                        pf = pf * 0.001f; // Scale if needed
+                    }
+                    return pf;
+                }
+                return 0f;
+                
+            default:
+                // Check if this is an inverter register
+                if (address >= INVERTER_START_ADDRESS) {
+                    return readInverterValue(address);
+                }
+                return 0f;
+        }
+    }
+
+    /**
+     * Reads PV inverter data for a specific register address.
+     */
+    private float readInverterValue(int address) {
+        int relativeAddr = address - INVERTER_START_ADDRESS;
+        int inverterIndex = relativeAddr / REGISTERS_PER_INVERTER;
+        int registerOffset = relativeAddr % REGISTERS_PER_INVERTER;
+        
+        if (inverterIndex < 0 || inverterIndex >= this.inverters.size()) {
+            return 0f;
+        }
+        
+        ManagedSymmetricPvInverter inv = this.inverters.get(inverterIndex);
+        
+        // Each inverter has: ActivePower (2 regs), ProductionEnergy (2 regs)
+        switch (registerOffset) {
+            case 0: case 1: // Active Power (kW)
+                return readChannelFloat(inv, "ActivePower") * 0.001f; // W -> kW
+            case 2: case 3: // Production Energy (kWh)
+                return readChannelFloat(inv, "ActiveProductionEnergy") * 0.001f; // Wh -> kWh
+            default:
+                return 0f;
+        }
+    }
+
+    /**
+     * Gets the base address for a float register pair.
+     */
+    private int getFloatBaseAddress(int address) {
+        // Static registers: 1-2, 3-4, 5-6, 7-8, 9-10, 21-22, 23-24
+        if (address >= 1 && address <= 10) {
+            return ((address - 1) / 2) * 2 + 1;
+        }
+        if (address >= 21 && address <= 24) {
+            return ((address - 21) / 2) * 2 + 21;
+        }
+        // Inverter registers start at 25
+        if (address >= INVERTER_START_ADDRESS) {
+            int relativeAddr = address - INVERTER_START_ADDRESS;
+            int baseOffset = (relativeAddr / 2) * 2;
+            return INVERTER_START_ADDRESS + baseOffset;
         }
         return -1;
     }
@@ -166,10 +321,10 @@ public class EvnProcessImage implements ProcessImage {
 
         for (int i = 0; i < count; i++) {
             int address = offset + i;
-            int baseAddr = getBaseAddress(address);
+            int baseAddr = getFloatBaseAddress(address);
 
             if (baseAddr >= 0) {
-                float value = getFloatValueForAddress(address);
+                float value = readMonitoringValue(baseAddr);
                 int[] words = createFloatWords(value);
 
                 if (address == baseAddr) {
@@ -189,9 +344,9 @@ public class EvnProcessImage implements ProcessImage {
     public synchronized InputRegister getInputRegister(int ref) throws IllegalAddressException {
         LOG.debug("EVN FC4 getInputRegister({}) - Monitoring Data", ref);
 
-        int baseAddr = getBaseAddress(ref);
+        int baseAddr = getFloatBaseAddress(ref);
         if (baseAddr >= 0) {
-            float value = getFloatValueForAddress(ref);
+            float value = readMonitoringValue(baseAddr);
             int[] words = createFloatWords(value);
             return new SimpleInputRegister(ref == baseAddr ? words[0] : words[1]);
         }
@@ -206,38 +361,23 @@ public class EvnProcessImage implements ProcessImage {
 
     // ==================== FC03 - Read Holding Registers ====================
     // ==================== FC06/FC16 - Write Holding Registers ====================
-    // 
-    // CRITICAL: getRegister() must return the SAME SimpleRegister object from our array.
-    // When j2mod receives FC06/FC16, it:
-    //   1. Calls getRegister(address) to get the Register object
-    //   2. Calls register.setValue(newValue) on that object
-    // Since we return the SAME object from holdingRegisters[], the value is stored!
 
     @Override
     public synchronized Register getRegister(int ref) throws IllegalAddressException {
         if (ref < 0 || ref >= MAX_REGISTER_ADDRESS) {
-            LOG.warn("EVN getRegister({}) - Address out of range", ref);
-            throw new IllegalAddressException("Address " + ref + " out of range (0-" + (MAX_REGISTER_ADDRESS - 1) + ")");
+            throw new IllegalAddressException("Address " + ref + " out of range");
         }
-
-        // Return the SAME Register object - this is critical for FC06/FC16 to work!
-        // j2mod will call setValue() on this object to store the written value.
-        LOG.debug("EVN getRegister({}) - returning holding register (current value={})",
-                ref, this.holdingRegisters[ref].getValue());
         return this.holdingRegisters[ref];
     }
 
     @Override
     public synchronized Register[] getRegisterRange(int offset, int count) throws IllegalAddressException {
-        LOG.debug("EVN getRegisterRange({}, {}) - Holding Registers", offset, count);
-
         if (offset < 0 || offset + count > MAX_REGISTER_ADDRESS) {
             throw new IllegalAddressException("Address range " + offset + "-" + (offset + count - 1) + " out of range");
         }
 
         Register[] result = new Register[count];
         for (int i = 0; i < count; i++) {
-            // Return the SAME Register objects from our array
             result[i] = this.holdingRegisters[offset + i];
         }
         return result;
@@ -249,11 +389,7 @@ public class EvnProcessImage implements ProcessImage {
     }
 
     // ==================== GETTERS FOR EVN COMMANDS ====================
-    // Read values that were written by EVN via FC06/FC16
 
-    /**
-     * Get value from a holding register.
-     */
     private int getHoldingRegisterValue(int address) {
         if (address < 0 || address >= MAX_REGISTER_ADDRESS) {
             return 0;
@@ -261,9 +397,6 @@ public class EvnProcessImage implements ProcessImage {
         return this.holdingRegisters[address].getValue();
     }
 
-    /**
-     * Get float value from 2 consecutive holding registers.
-     */
     private float getHoldingRegisterFloat(int baseAddress) {
         if (baseAddress < 0 || baseAddress + 1 >= MAX_REGISTER_ADDRESS) {
             return 0f;
@@ -274,49 +407,37 @@ public class EvnProcessImage implements ProcessImage {
         return Float.intBitsToFloat(intBits);
     }
 
-    /** Is P-out control enabled by EVN? */
     public boolean isPOutEnabled() {
-        int value = getHoldingRegisterValue(EvnWriteRegisters.P_OUT_ENABLE_ADDRESS);
-        return value != 0;
+        return getHoldingRegisterValue(EvnWriteRegisters.P_OUT_ENABLE_ADDRESS) != 0;
     }
 
-    /** Get P-out Setpoint in % (0-100). */
     public float getPOutSetpointPercent() {
         return getHoldingRegisterFloat(EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS);
     }
 
-    /** Get P-out Setpoint in kW. */
     public float getPOutSetpointKw() {
         return getHoldingRegisterFloat(EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS);
     }
 
-    /** Is Q-out control enabled by EVN? */
     public boolean isQOutEnabled() {
-        int value = getHoldingRegisterValue(EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS);
-        return value != 0;
+        return getHoldingRegisterValue(EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS) != 0;
     }
 
-    /** Get Q-out Setpoint in % (-100 to +100). */
     public float getQOutSetpointPercent() {
         return getHoldingRegisterFloat(EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS);
     }
 
-    /** Get Q-out Setpoint in kvar. */
     public float getQOutSetpointKvar() {
         return getHoldingRegisterFloat(EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS);
     }
 
     // ==================== Debug logging ====================
 
-    /**
-     * Log all control register values for debugging.
-     */
     public void logControlRegisterValues() {
-        LOG.info("=== EVN Control Register Values (written by FC06/FC16) ===");
-        LOG.info("P-out Enable (Reg {}): {} (raw=0x{})",
+        LOG.info("=== EVN Control Register Values ===");
+        LOG.info("P-out Enable (Reg {}): {}",
                 EvnWriteRegisters.P_OUT_ENABLE_ADDRESS,
-                isPOutEnabled() ? "ENABLED" : "DISABLED",
-                String.format("%04X", getHoldingRegisterValue(EvnWriteRegisters.P_OUT_ENABLE_ADDRESS)));
+                isPOutEnabled() ? "ENABLED" : "DISABLED");
         LOG.info("P-out % (Reg {}-{}): {} %",
                 EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS,
                 EvnWriteRegisters.P_OUT_SETPOINT_PERCENT_ADDRESS + 1,
@@ -325,10 +446,9 @@ public class EvnProcessImage implements ProcessImage {
                 EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS,
                 EvnWriteRegisters.P_OUT_SETPOINT_KW_ADDRESS + 1,
                 getPOutSetpointKw());
-        LOG.info("Q-out Enable (Reg {}): {} (raw=0x{})",
+        LOG.info("Q-out Enable (Reg {}): {}",
                 EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS,
-                isQOutEnabled() ? "ENABLED" : "DISABLED",
-                String.format("%04X", getHoldingRegisterValue(EvnWriteRegisters.Q_OUT_ENABLE_ADDRESS)));
+                isQOutEnabled() ? "ENABLED" : "DISABLED");
         LOG.info("Q-out % (Reg {}-{}): {} %",
                 EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS,
                 EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS + 1,
@@ -337,10 +457,10 @@ public class EvnProcessImage implements ProcessImage {
                 EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS,
                 EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS + 1,
                 getQOutSetpointKvar());
-        LOG.info("=========================================================");
+        LOG.info("===================================");
     }
 
-    // ==================== Not implemented (coils, files, etc.) ====================
+    // ==================== Not implemented ====================
 
     @Override
     public DigitalOut[] getDigitalOutRange(int offset, int count) {

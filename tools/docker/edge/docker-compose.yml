@@ -1,6 +1,6 @@
 services:
   openems-edge:
-    image: openems/edge:latest
+    image: openems/edge:custom
     container_name: openems_edge
     hostname: openems_edge
     restart: unless-stopped

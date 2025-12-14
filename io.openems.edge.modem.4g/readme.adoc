@@ -1,0 +1,113 @@
+= OpenEMS Edge Modem 4G Manager
+
+This bundle provides 4G/LTE modem management for OpenEMS Edge using Quectel PPP.
+
+== Features
+
+* Auto-detect 4G modem using ModemManager
+* Monitor signal strength, operator, connection status
+* Configure APN via `/etc/ppp/quectel-pppd.sh`
+* JSON-RPC API for remote configuration
+
+== Requirements
+
+* Linux with ModemManager installed
+* Quectel 4G modem (EG25, EC25, etc.)
+* PPP script: `/etc/ppp/quectel-pppd.sh` (from Quectel SDK)
+* Sudoers configuration for passwordless access
+
+== Setup
+
+1. Install ModemManager and PPP:
++
+[source,bash]
+----
+sudo apt install modemmanager ppp
+----
+
+2. Install Quectel PPP script (from Quectel SDK) to `/etc/ppp/quectel-pppd.sh`
+
+3. Configure sudoers (one-time setup):
++
+[source,bash]
+----
+cd scripts/
+chmod +x setup-modem-sudoers.sh
+sudo ./setup-modem-sudoers.sh openems
+----
+
+4. Verify modem detection:
++
+[source,bash]
+----
+mmcli -L
+----
+
+== Configuration
+
+In Apache Felix Web Console, configure `Modem.4G.Manager`:
+
+* **APN**: Access Point Name (e.g., `v-internet`, `m-wap`)
+* **Username**: APN username (optional)
+* **Password**: APN password (optional)
+
+The module will update `/etc/ppp/quectel-pppd.sh` with these values:
+[source,bash]
+----
+QL_APN=v-internet
+QL_USER=
+QL_PASSWORD=
+----
+
+== JSON-RPC API
+
+=== getModemStatus
+
+Get current modem status.
+
+.Response
+[source,json]
+----
+{
+  "status": "CONNECTED",
+  "signalStrength": 75,
+  "operator": "Viettel",
+  "ipAddress": "10.1.2.3",
+  "connectionType": "LTE",
+  "modemModel": "Quectel EG25",
+  "imei": "123456789012345"
+}
+----
+
+=== getModemConfig
+
+Get current APN configuration.
+
+.Response
+[source,json]
+----
+{
+  "apn": "v-internet",
+  "username": "",
+  "password": ""
+}
+----
+
+=== setModemConfig
+
+Set new APN configuration.
+
+.Request
+[source,json]
+----
+{
+  "jsonrpc": "2.0",
+  "id": "uuid",
+  "method": "setModemConfig",
+  "params": {
+    "apn": "v-internet",
+    "username": "",
+    "password": ""
+  }
+}
+----

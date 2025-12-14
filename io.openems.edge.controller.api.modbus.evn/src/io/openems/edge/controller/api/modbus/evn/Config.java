@@ -5,7 +5,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(//
         name = "Controller Api Modbus/TCP EVN", //
-        description = "This controller provides EVN-specific Modbus/TCP monitoring with fixed register mapping and remote power control.")
+        description = "This controller provides EVN-specific Modbus/TCP monitoring with fixed register mapping and remote power control. Automatically discovers all meters (meterX) and PV inverters (pvInverterX) from the system.")
 @interface Config {
 
     @AttributeDefinition(name = "Component-ID", description = "Unique ID of this Component")
@@ -23,14 +23,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     @AttributeDefinition(name = "Max concurrent connections", description = "Maximum number of concurrent Modbus connections.")
     int maxConcurrentConnections() default 5;
 
-    @AttributeDefinition(name = "Meter-IDs", description = "IDs of Meters for monitoring (e.g. meter0, meter1)")
-    String[] meter_ids() default {};
-
     @AttributeDefinition(name = "Redistribute on Fault", description = "Redistribute power to healthy inverters when one is faulted")
     boolean redistributeOnFault() default true;
-
-    @AttributeDefinition(name = "PV-Inverter-IDs", description = "IDs of PV Inverters to control via EVN commands (e.g. pvInverter0, pvInverter1)")
-    String[] pvInverter_ids() default { "pvInverter0" };
 
     String webconsole_configurationFactory_nameHint() default "Controller Api Modbus/TCP EVN [{id}]";
 }
