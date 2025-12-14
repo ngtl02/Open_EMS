@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;io.openems.edge.application&apos;&#x0D;&#x0A;- Original project: &apos;io.openems.edge.application&apos;&#x0D;&#x0A;- Original element: &apos;io.openems.edge.application/generated/generated/sources/annotationProcessor/java/main&apos;" description="Delete element" element1="/generated\/generated\/sources\/annotationProcessor\/java\/main=/optional=/true=/=/gradle.buildServer=/true=/" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1765616139517" subPackages="false" version="1.0"/>
+</session>

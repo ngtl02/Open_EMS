@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workingSetManager>
+<workingSet editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765425676505_0" label="Java Main Sources" name="Java Main Sources"/>
+<workingSet editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765425676529_1" label="Java Test Sources" name="Java Test Sources"/>
+<workingSet editPageId="bndtools.core.BndtoolsJavaWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765425680344_3" label="Bndtools Java Model" name="Bndtools Java Model"/>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765425989395_4" label="Common" name="Common">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.wrapper" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.common" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.shared.influxdb" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426009655_5" label="Edge_Common" name="Edge_Common">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.common" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.simulator" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.edge2edge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.application" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.core" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426012484_6" label="Edge_Multiple" name="Edge_Multiple">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.katek.edcom" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.bosch.bpts5hybrid" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.kaco.blueplanet.hybrid10" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.tesla.powerwall2" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.solaredge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.fenecon.pro" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.fenecon.mini" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.fenecon.dess" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.goodwe" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426013225_7" label="Edge_Thermometer" name="Edge_Thermometer">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.thermometer.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.onewire.thermometer" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426013784_8" label="Edge_Predictor" name="Edge_Predictor">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.predictor.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.predictor.production.linearmodel" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.predictor.similardaymodel" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.predictor.profileclusteringmodel" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.predictor.persistencemodel" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.predictor.lstm" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426014476_9" label="Edge_TimeOfUseTariff" name="Edge_TimeOfUseTariff">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.tibber" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.manual" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.ews" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.corrently" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.awattar" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.ancillarycosts" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.swisspower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.rabotcharge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.luox" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.hassfurt" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.groupe" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timeofusetariff.entsoe" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426018968_10" label="Edge_Bridge" name="Edge_Bridge">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.bridge.onewire" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.bridge.mqtt" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.bridge.mbus" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.bridge.modbus" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.bridge.http" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426056309_11" label="Edge_Timedata" name="Edge_Timedata">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timedata.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timedata.rrd4j" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.timedata.influxdb" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426061012_12" label="Edge_Scheduler" name="Edge_Scheduler">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.scheduler.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.scheduler.jscalendar" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.scheduler.fixedorder" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.scheduler.daily" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.scheduler.allalphabetically" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426062778_13" label="Edge_Controller_Debug" name="Edge_Controller_Debug">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.debug.log" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.debug.detailedlog" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426063423_14" label="Edge_IO" name="Edge_IO">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.channelthreshold" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.highloadtimeslot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.revpi" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.offgridswitch" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.gpio" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.chp.soc" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.weidmueller" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.wago" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.siemenslogo" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.kmtronic" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.filipowski" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.io.shelly" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426063804_15" label="Edge_Controller_Api" name="Edge_Controller_Api">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.common" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.websocket" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.mqtt" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.backend" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.modbus" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.rest" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.api.modbus.evn" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426065921_16" label="Edge_Ess" name="Edge_Ess">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.core" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.cluster" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.generic" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.fenecon.commercial40" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.adstec.storaxe" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.ess.samsung" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426067565_17" label="Edge_Controller_Ess" name="Edge_Controller_Ess">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.symmetric.randompower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.symmetric.limitactivepower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.symmetric.fixreactivepower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.standby" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.mindischargeperiod" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.linearpowerband" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.hybrid.surplusfeedtogrid" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.fixstateofcharge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.delaycharge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.cycle" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.asymmetric.fixreactivepower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.symmetric.timeslotpeakshaving" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.symmetric.peakshaving" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.symmetric.balancingschedule" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.selltogridlimit" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.reactivepowervoltagecharacteristic" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.fastfrequencyreserve" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.delayedselltogrid" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.balancing" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.activepowervoltagecharacteristic" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.fixactivepower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.limittotaldischarge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.asymmetric.phaserectification" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.asymmetric.peakshaving" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.asymmetric.balancingcosphi" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.ripplecontrolreceiver" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.gridoptimizedcharge" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.acisland" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.limiter14a" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.emergencycapacityreserve" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.ess.timeofusetariff" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426071421_18" label="Edge_Meter" name="Edge_Meter">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.discovergy" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.abb" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.ziehl" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.weidmueller" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.virtual" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.socomec" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.siemens" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.schneider.acti9.smartlink" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.pqplus" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.plexlog" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.phoenixcontact" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.kdk" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.janitza" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.eastron" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.carlo.gavazzi" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.camillebauer.aplus" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.bgetech" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.bcontrol.em300" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.artemes.am2" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.schneider" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.elecnova" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.edmi" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.meter.artel" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426074365_19" label="Edge_Evcs" name="Edge_Evcs">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.openwb" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.ocpp.common" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.ocpp.server" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.ocpp.ies.keywatt.singleccs" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.ocpp.abl" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.goe.chargerhome" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.core" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.cluster" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.webasto.unite" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.webasto.next" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.spelsberg" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.mennekes" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.heidelberg" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.abl" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evcs.goe" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426077295_20" label="Edge_Controller_Evcs" name="Edge_Controller_Evcs">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.evcs.fixactivepower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.evcs" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426079247_21" label="Edge_Evse" name="Edge_Evse">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evse.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evse.electricvehicle.generic" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.evse" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evse.chargepoint.keba" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evse.chargepoint.heidelberg" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evse.chargepoint.alpitronic" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.evse.chargepoint.hardybarth" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426083321_22" label="Edge_PVinverter" name="Edge_PVinverter">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.cluster" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.solarlog" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.kaco.blueplanet" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.kostal" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.sungrow" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.solis" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.sma" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.huawei" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.pvinverter.deye" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426084847_23" label="Edge_Controller_PVinverter" name="Edge_Controller_PVinverter">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.pvinverter.selltogridlimit" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.pvinverter.limitreactivepower" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.pvinverter.limitbatterysoc" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.pvinverter.fixpowerlimit" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426086940_24" label="Edge_Controller_IO" name="Edge_Controller_IO">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.heatpump.sgready" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.heatingelement" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.heating.room" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.fixdigitaloutput" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.channelsinglethreshold" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.analog" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.io.alarm" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426089561_25" label="Edge_Controller_Generic" name="Edge_Controller_Generic">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.controller.generic.jsonlogic" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426091947_26" label="Edge_Battery" name="Edge_Battery">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.sinexcel" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.refu88k" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.kaco.blueplanetgridsave" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.soltaro" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.pylontech" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.fenecon.home" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.fenecon.commercial" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.bydcommercial" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.battery.bmw" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426092385_27" label="Edge_Battery_Inverter" name="Edge_Battery_Inverter">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.api" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.sinexcel" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.refu88k" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.edge.batteryinverter.kaco.blueplanetgridsave" type="4"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765426137556_28" label="Backend" name="Backend">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.common" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.uiwebsocket" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.timedata.timescaledb" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.timedata.influx" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.timedata.dummy" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.timedata.aggregatedinflux" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.simulator" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.metrics.prometheus" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.metadata.odoo" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.metadata.file" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.metadata.dummy" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.oauthregistry" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.edgewebsocket" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.core" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.b2bwebsocket" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.b2brest" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.application" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/io.openems.backend.alerting" type="4"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1765425679148_2" label="Window Working Set" name="Aggregate for window 1765425679148"/>
+</workingSetManager>

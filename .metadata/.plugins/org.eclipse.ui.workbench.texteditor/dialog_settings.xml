@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<section name="java.lang.Class">
+		<item key="replaceBarOpen" value="false"/>
+		<list key="findhistory">
+			<item value="this.con"/>
+			<item value="30891"/>
+			<item value="30989"/>
+			<item value="30985"/>
+			<item value="APPARENT_POWER"/>
+			<item value="PvInverterSolisHybrid"/>
+			<item value="setmaxChargeSOCLimit"/>
+			<item value="SOC"/>
+		</list>
+	</section>
+</section>
