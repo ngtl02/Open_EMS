@@ -4,73 +4,115 @@ The OpenEMS Edge Modbus-Slave-API for EVN provides a fixed register mapping for 
 
 == Overview
 
-Unlike the dynamic Modbus API, this EVN-specific controller provides a **fixed register table** (addresses 1-50) designed for EVN monitoring requirements. All float values use IEEE-754 encoding (2 registers per float value).
+This controller acts as a **Modbus TCP Slave** that:
+
+1. **Provides monitoring data** to EVN via fixed register addresses
+2. **Receives P/Q setpoints** from EVN and exposes them as OpenEMS channels
+3. **Does NOT directly control inverters** - a separate controller must read the setpoint channels and implement grid power control
+
+== Architecture
+
+[source]
+----
+EVN SCADA ──Modbus TCP──> EVN Controller ──> Channels (P_OUT_SETPOINT_WATT, etc.)
+                                                       │
+                                                       ▼
+                              Grid Power Controller ──> PV Inverters
+                                      ▲
+                                      │
+                              Grid Meter (power feedback)
+----
 
 == Configuration
 
-Configure the controller via OpenEMS UI with the following parameters:
+Configure via OpenEMS UI:
 
-* **Component-ID**: Unique identifier (e.g., `ctrlApiModbusTcpEvn0`)
+* **Component-ID**: Unique identifier (e.g., `ctrlEvnModbus0`)
 * **Port**: Modbus TCP port (default: 502)
-* **Component-IDs**: Components to read data from (e.g., `_sum`, inverter IDs, meter IDs)
+* **Max Concurrent Connections**: Maximum number of simultaneous connections
 
-== Register Mapping
+== Setpoint Channels
 
-=== Monitoring Registers (Read-Only, Input Registers T04)
+The following channels are exposed for other controllers to read:
+
+[cols="2,1,4", options="header"]
+|===
+|Channel |Type |Description
+
+|`POutEnabled` |Boolean |P-out control enabled by EVN
+|`POutSetpointPercent` |Float |P-out setpoint in percentage (0-100%)
+|`POutSetpointWatt` |Integer |P-out setpoint in Watts
+|`QOutEnabled` |Boolean |Q-out control enabled by EVN
+|`QOutSetpointPercent` |Float |Q-out setpoint in percentage (-100 to +100%)
+|`QOutSetpointVar` |Integer |Q-out setpoint in var
+|===
+
+Example: Reading setpoint from another controller:
+[source,java]
+----
+// Get EVN controller reference
+ControllerApiModbusEvn evnCtrl = componentManager.getComponent("ctrlEvnModbus0");
+
+// Check if P-out control is enabled
+if (evnCtrl.getPOutEnabled().orElse(false)) {
+    int targetPowerWatt = evnCtrl.getPOutSetpointWatt().orElse(0);
+    // Implement grid power control logic...
+}
+----
+
+== Modbus Register Mapping
+
+=== Monitoring Registers (Read-Only, FC04 - Input Registers)
 
 [cols="1,1,4,3", options="header"]
 |===
-|Address |Type |Description |OpenEMS Channel
+|Address |Type |Description |Source
 
-|1-2 |Float32 |Grid Active Power (P-out) |_sum/GridActivePower
-|3-4 |Float32 |Total Inverter Power (Pinv-out) |_sum/ProductionActivePower
-|5-6 |Float32 |Previous Day Energy (Ainv_D-1) |_sum/ProductionActiveEnergyYesterday
-|7-8 |Float32 |Grid Reactive Power (kVar) |_sum/GridReactivePower
-|9-10 |Float32 |Phase Voltage Ua (V) |_sum/VoltageL1
-|11-12 |Float32 |Phase Voltage Ub (V) |_sum/VoltageL2
-|13-14 |Float32 |Phase Voltage Uc (V) |_sum/VoltageL3
-|15-16 |Float32 |Phase Current Ia (A) |_sum/CurrentL1
-|17-18 |Float32 |Phase Current Ib (A) |_sum/CurrentL2
-|19-20 |Float32 |Phase Current Ic (A) |_sum/CurrentL3
-|21-22 |Float32 |Frequency (Hz) |_sum/Frequency
-|23-24 |Float32 |Power Factor |_sum/CosPhi
-|25-26 |Float32 |Inverter 1 DC Power |inverter0/DcPower
-|27-28 |Float32 |Inverter 1 Daily Energy |inverter0/ActiveProductionEnergyYesterday
-|29-30 |Float32 |Inverter 2 DC Power |inverter1/DcPower
-|31-32 |Float32 |Inverter 2 Daily Energy |inverter1/ActiveProductionEnergyYesterday
+|1-2 |Float32 |Grid Active Power (kW) |_sum/GridActivePower
+|3-4 |Float32 |Total Production Power (kW) |_sum/ProductionActivePower
+|5-6 |Float32 |Production Energy (kWh) |_sum/ProductionActiveEnergy
+|7-8 |Float32 |Grid Reactive Power (kVar) |meter0/ReactivePower
+|9-10 |Float32 |Phase Voltage L1 (V) |meter0/VoltageL1
+|11-12 |Float32 |Phase Voltage L2 (V) |meter0/VoltageL2
+|13-14 |Float32 |Phase Voltage L3 (V) |meter0/VoltageL3
+|15-16 |Float32 |Phase Current L1 (A) |meter0/CurrentL1
+|17-18 |Float32 |Phase Current L2 (A) |meter0/CurrentL2
+|19-20 |Float32 |Phase Current L3 (A) |meter0/CurrentL3
+|21-22 |Float32 |Frequency (Hz) |meter0/Frequency
+|23-24 |Float32 |Power Factor |meter0/Pf
+|25+ |Float32 |PV Inverter data (4 regs each) |pvInverterX/ActivePower, ActiveProductionEnergy
 |===
 
-=== Control Registers (Read-Write, Holding Registers T03/T06)
+=== Control Registers (Read-Write, FC03/FC06/FC16 - Holding Registers)
 
 [cols="1,1,4", options="header"]
 |===
 |Address |Type |Description
 
-|11 |Boolean |Enable P-out Control
-|12 |Integer |SetPoint P-out % (0-100)
-|13 |Integer |SetPoint P-out kW
-|12 |Boolean |Enable Q-out Control
-|14 |Integer |SetPoint Q-out % (0-100)
-|15 |Integer |SetPoint Q-out kvar
+|11 |UInt16 |Enable P-out Control (0=disabled, 1=enabled)
+|12 |UInt16 |Enable Q-out Control (0=disabled, 1=enabled)
+|13-14 |Float32 |SetPoint P-out (%)
+|15-16 |Float32 |SetPoint P-out (kW)
+|17-18 |Float32 |SetPoint Q-out (%)
+|19-20 |Float32 |SetPoint Q-out (kvar)
 |===
 
 == Supported Modbus Functions
 
-* **T01/T05**: Read/Write Coils (for boolean control)
-* **T02**: Read Discrete Inputs
-* **T03/T06**: Read/Write Holding Registers (for integer control)
-* **T04**: Read Input Registers (for monitoring data)
+* **FC03**: Read Holding Registers (control values)
+* **FC04**: Read Input Registers (monitoring data)
+* **FC06**: Write Single Register (control commands)
+* **FC16**: Write Multiple Registers (float setpoints)
 
 == IEEE-754 Float Encoding
 
-All monitoring values use IEEE-754 32-bit float encoding:
-* Each float value occupies 2 consecutive Modbus registers (16-bit each)
-* Byte order: Big-endian (network byte order)
-* Example: Value at address 1 uses registers 1 and 2
+All float values use IEEE-754 32-bit encoding:
 
-== Example Usage
+* Each float occupies 2 consecutive 16-bit registers
+* Byte order: Big-endian (High word first)
+* Example: Grid Power at address 1-2
 
-=== Reading Grid Active Power (Python with pymodbus)
+== Example: Reading Grid Power (Python)
 
 [source,python]
 ----
@@ -80,21 +122,28 @@ import struct
 client = ModbusTcpClient('192.168.1.100', port=502)
 result = client.read_input_registers(address=0, count=2, slave=1)
 
-# Convert 2 registers to IEEE-754 float
+# Convert to float
 bytes_data = struct.pack('>HH', result.registers[0], result.registers[1])
-grid_power = struct.unpack('>f', bytes_data)[0]
-print(f"Grid Active Power: {grid_power} W")
+grid_power_kw = struct.unpack('>f', bytes_data)[0]
+print(f"Grid Power: {grid_power_kw} kW")
 ----
 
-=== Writing SetPoint P-out in kW
+== Example: Writing P-out Setpoint in kW (Python)
 
 [source,python]
 ----
 from pymodbus.client import ModbusTcpClient
+import struct
 
 client = ModbusTcpClient('192.168.1.100', port=502)
-# Write 5000 kW to address 13
-client.write_register(address=12, value=5000, slave=1)
+
+# Enable P-out control
+client.write_register(address=10, value=1, slave=1)
+
+# Write 100.5 kW setpoint (Float32 at address 15-16)
+value = struct.pack('>f', 100.5)
+regs = struct.unpack('>HH', value)
+client.write_registers(address=14, values=list(regs), slave=1)
 ----
 
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.controller.api.modbus.evn[Source Code icon:github[]]

@@ -8,6 +8,8 @@ Bundle-Version: 1.0.0.${tstamp}
 	io.openems.common,\
 	io.openems.edge.common,\
 	io.openems.edge.controller.api,\
+	io.openems.edge.controller.api.modbus,\
+	io.openems.edge.controller.api.modbus.evn,\
 	io.openems.edge.meter.api,\
 	io.openems.edge.pvinverter.api,\
 

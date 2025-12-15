@@ -64,7 +64,7 @@ public class EvnRegisterMapping {
     public static final EvnRegisterMapping PRODUCTION_ENERGY = new EvnRegisterMapping(5,
             "Ainv: Total Production Energy (kWh)", "_sum/ProductionActiveEnergy", true, 0.001f);
     public static final EvnRegisterMapping GRID_REACTIVE_POWER = new EvnRegisterMapping(7,
-            "Q-out: Reactive Power (kVar)", "_sum/EssReactivePower", true, 0.001f);
+            "Q-out: Grid Reactive Power (kVar)", DEFAULT_METER_ID + "/ReactivePower", true, 0.001f);
 
     // Voltage Monitoring - addresses 9-14 (from meter)
     // ElectricityMeter.ChannelId: VOLTAGE_L1, VOLTAGE_L2, VOLTAGE_L3 (unit: mV)

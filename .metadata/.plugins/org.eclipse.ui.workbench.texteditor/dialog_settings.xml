@@ -4,6 +4,7 @@
 	<section name="java.lang.Class">
 		<item key="replaceBarOpen" value="false"/>
 		<list key="findhistory">
+			<item value="DEFAULT_METER_ID"/>
 			<item value="this.con"/>
 			<item value="30891"/>
 			<item value="30989"/>

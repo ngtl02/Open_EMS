@@ -216,13 +216,11 @@ public class EvnProcessImage implements ProcessImage {
                     return 0f;
                 }
                 
-            case 7: case 8: // Grid Reactive Power (kVar) - _sum
-                try {
-                    OpenemsComponent sum = this.componentManager.getComponent("_sum");
-                    return readChannelFloat(sum, "GridReactivePower") * 0.001f; // var -> kVar
-                } catch (Exception e) {
-                    return 0f;
+            case 7: case 8: // Grid Reactive Power (kVar) - from meter
+                if (meter != null) {
+                    return readChannelFloat(meter, "ReactivePower") * 0.001f; // var -> kVar
                 }
+                return 0f;
                 
             case 9: case 10: // Voltage L1 (V) - first meter
                 if (meter != null) {

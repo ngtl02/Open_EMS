@@ -10552,3 +10552,920 @@ java.nio.file.FileSystemException: D:\AT_Energy\OpenEMS_Lastes\NewOpenems\openem
 !MESSAGE OK
 !SUBENTRY 8 unknown 0 0 2025-12-14 20:08:10.233
 !MESSAGE OK
+!SESSION 2025-12-15 08:57:01.255 -----------------------------------------------
+eclipse.buildId=4.37.0.20250905-1455
+java.version=21.0.8
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY ch.qos.logback.classic 1 0 2025-12-15 08:57:06.547
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY org.eclipse.lemminx.uber-jar 4 0 2025-12-15 08:57:06.941
+!MESSAGE bundle org.eclipse.lemminx.uber-jar:0.31.0 (276) Component descriptor entry 'OSGI-INF/*.xml' not found
+
+!ENTRY ch.qos.logback.classic 1 0 2025-12-15 08:57:10.110
+!MESSAGE Logback config file: D:\AT_Energy\OpenEMS_Lastes\NewOpenems\openems\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.7.100.20250418-1315.xml
+
+!ENTRY org.eclipse.egit.ui 2 0 2025-12-15 08:57:23.602
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Linh'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.e4.ui.workbench 2 0 2025-12-15 08:57:23.680
+!MESSAGE Removing PartDescriptorImpl with the "bndtools.openAIView" id and the "OpenAI" label.It points to the non available "bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" class. Bundle might have been uninstalled
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:25.921
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:27.512
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:30.008
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:30.306
+!MESSAGE Download https://central.sonatype.com/repository/maven-snapshots/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:34.685
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:34.687
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:35.797
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:35.930
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:37.037
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:37.350
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:37.862
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:37.977
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:38.396
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:38.527
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:38.540
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:38.630
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:40.020
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:40.153
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:42.257
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:42.329
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:46.666
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:46.850
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:53.752
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:53.758
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:54.063
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:54.069
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:54.256
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:54.341
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:54.901
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:55.101
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:55.227
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:55.233
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:55.964
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:56.073
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:58.177
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:57:58.264
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:58:02.331
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 08:58:02.408
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:36.940
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:37.143
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:37.599
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:37.672
+!MESSAGE Download https://central.sonatype.com/repository/maven-snapshots/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:40.205
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:40.206
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:40.333
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:40.334
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:41.843
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:41.847
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:41.905
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:42.316
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:42.956
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:43.002
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:43.142
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:43.142
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:44.167
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:44.272
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:46.351
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:46.407
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:50.470
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:00:50.540
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:28.429
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:28.702
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:30.574
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:30.796
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:30.859
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:30.891
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:31.230
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:31.279
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:31.627
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:31.631
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:31.679
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:32.529
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:32.541
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:33.050
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:33.572
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:33.576
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:33.787
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:33.861
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:35.925
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:35.987
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:40.047
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:06:40.102
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:22.939
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:23.367
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:25.545
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:25.722
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:26.493
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:26.772
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:27.560
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:27.614
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:27.616
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:28.048
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:28.676
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:28.677
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:28.904
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:29.499
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:29.639
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:29.642
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:30.161
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:30.241
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:32.377
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:32.485
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:36.583
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:08:36.679
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:28.913
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:29.037
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.193
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.256
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.259
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.278
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.763
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.792
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.897
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:30.906
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:31.334
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:31.486
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:32.099
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:32.607
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:32.698
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:33.448
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:33.451
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:33.662
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:34.788
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:34.854
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:38.914
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:11:38.977
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:29.083
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:29.416
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:30.451
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:30.524
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:30.526
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:30.626
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:31.163
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:31.262
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:31.440
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:31.472
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:31.559
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:32.071
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:32.207
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:32.372
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:32.373
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:32.796
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:32.918
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:34.987
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:35.044
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:39.111
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 14:16:39.179
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:27.003
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:27.289
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:28.812
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:28.907
+!MESSAGE Download https://central.sonatype.com/repository/maven-snapshots/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:30.916
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:30.963
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:31.315
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:31.646
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:31.661
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:31.726
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:31.941
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:32.048
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:32.335
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:32.874
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:33.023
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:33.033
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:33.135
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:33.848
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:33.923
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:35.986
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:36.051
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:40.150
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:07:40.251
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:25:58.806
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:25:58.988
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:02.775
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:02.777
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:03.254
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:03.257
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:03.742
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:03.782
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:03.926
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:05.046
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:05.126
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:05.370
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:05.818
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:06.020
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:06.021
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:06.915
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:07.060
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:09.237
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:09.341
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:13.498
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:26:13.597
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:22.212
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:22.969
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:32.057
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:33.859
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:34.007
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:35.175
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:35.310
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:35.541
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:35.591
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:36.110
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:36.310
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:37.391
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:37.641
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:37.763
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:37.919
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:37.921
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:38.058
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:38.131
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:40.269
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:40.366
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:44.435
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:51:44.501
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:49.063
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:49.748
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:52.647
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:52.686
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:53.032
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:53.035
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:55.547
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:55.633
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:55.781
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:56.774
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:57.150
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:58.160
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:58.556
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:58.558
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:59.069
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:56:59.168
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:57:01.300
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:57:01.430
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:57:05.506
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 15:57:05.593
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:26.918
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:27.201
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:27.723
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:27.820
+!MESSAGE Download https://central.sonatype.com/repository/maven-snapshots/org/mongodb/bson/maven-metadata.xml
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:29.145
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:29.868
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:30.138
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:30.140
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:30.244
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:30.247
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:31.206
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:31.295
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:31.490
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:31.491
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:31.898
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:32.031
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:32.159
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:32.160
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:32.457
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:32.522
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:34.616
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:34.707
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:38.782
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:10:38.856
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:12.652
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:12.916
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:14.741
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:14.778
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-cobertura-plugin/1.3/maven-cobertura-plugin-1.3.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:14.784
+!MESSAGE Download https://repo.maven.apache.org/maven2/maven-plugins/maven-findbugs-plugin/1.3.1/maven-findbugs-plugin-1.3.1.plugin
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:14.902
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:14.922
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:15.750
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:16.593
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:16.788
+!MESSAGE Download https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.6.2/xml-apis-2.6.2.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:16.908
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:17.017
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:17.251
+!MESSAGE Download https://repo.maven.apache.org/maven2/xerces/xerces-impl/2.6.2/xerces-impl-2.6.2.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:17.410
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:17.572
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/RELEASE/micrometer-core-RELEASE.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:17.573
+!MESSAGE Download https://repo.maven.apache.org/maven2/io/projectreactor/tools/blockhound/1.0.0.RC1/blockhound-1.0.0.RC1.jar
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:18.218
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:18.340
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:20.441
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:20.505
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:24.552
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom
+
+!ENTRY bndtools.core 1 0 2025-12-15 16:24:24.609
+!MESSAGE Download https://repo.maven.apache.org/maven2/org/multiverse/multiverse-beta/0.7-RC-1/multiverse-beta-0.7-RC-1.pom.sha1
+
+!ENTRY org.eclipse.ui 4 0 2025-12-15 18:04:01.260
+!MESSAGE Exceptions during shutdown
+!STACK 0
+org.eclipse.swt.SWTException: Widget is disposed
+	at org.eclipse.swt.SWT.error(SWT.java:4946)
+	at org.eclipse.swt.SWT.error(SWT.java:4861)
+	at org.eclipse.swt.SWT.error(SWT.java:4832)
+	at org.eclipse.swt.widgets.Widget.error(Widget.java:507)
+	at org.eclipse.swt.widgets.Widget.getDisplay(Widget.java:628)
+	at org.eclipse.jface.dialogs.ProgressMonitorDialog.run(ProgressMonitorDialog.java:471)
+	at org.eclipse.ui.internal.progress.ProgressMonitorJobsDialog.run(ProgressMonitorJobsDialog.java:230)
+	at org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor.disconnectFromWorkspace(IDEWorkbenchAdvisor.java:561)
+	at org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor$2.run(IDEWorkbenchAdvisor.java:368)
+	at org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor.postShutdown(IDEWorkbenchAdvisor.java:389)
+	at org.eclipse.ui.internal.Workbench.shutdown(Workbench.java:3060)
+	at org.eclipse.ui.internal.Workbench.busyClose(Workbench.java:1193)
+	at org.eclipse.ui.internal.Workbench.lambda$5(Workbench.java:1466)
+	at org.eclipse.swt.custom.BusyIndicator.showWhile(BusyIndicator.java:67)
+	at org.eclipse.ui.internal.Workbench.close(Workbench.java:1466)
+	at org.eclipse.ui.internal.Workbench.close(Workbench.java:1437)
+	at org.eclipse.ui.internal.Workbench.lambda$17(Workbench.java:2862)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:91)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:4362)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:4354)
+	at org.eclipse.swt.widgets.Display.messageProc(Display.java:3351)
+	at org.eclipse.swt.internal.win32.OS.DefWindowProc(Native Method)
+	at org.eclipse.swt.widgets.Shell.callWindowProc(Shell.java:504)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:4887)
+	at org.eclipse.swt.widgets.Canvas.windowProc(Canvas.java:336)
+	at org.eclipse.swt.widgets.Decorations.windowProc(Decorations.java:1494)
+	at org.eclipse.swt.widgets.Shell.windowProc(Shell.java:2378)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:5130)
+	at org.eclipse.swt.internal.win32.OS.PeekMessage(Native Method)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3743)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1151)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1042)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:153)
+	at org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:678)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:583)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:173)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:185)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:115)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:467)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:298)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:627)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:575)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1431)

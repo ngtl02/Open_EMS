@@ -9,7 +9,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @interface Config {
 
     @AttributeDefinition(name = "Component-ID", description = "Unique ID of this Component")
-    String id() default "ctrlApiModbusTcpEvn0";
+    String id() default "ctrlEvnModbus0";
 
     @AttributeDefinition(name = "Alias", description = "Human-readable name of this Component")
     String alias() default "ModbusTcp EVN";
