@@ -102,7 +102,7 @@ public class ControllerApiModbusEvnImpl extends AbstractOpenemsComponent
 
         try {
             // Create custom EVN process image with discovered components
-            this.evnProcessImage = new EvnProcessImage(this.componentManager, this.meters, this.inverters);
+            this.evnProcessImage = new EvnProcessImage(this.componentManager, this.meters, this.inverters, config.smartLogger_id());
 
             // Create Modbus TCP slave
             this.slave = ModbusSlaveFactory.createTCPSlave(config.port(), config.maxConcurrentConnections());
@@ -151,6 +151,17 @@ public class ControllerApiModbusEvnImpl extends AbstractOpenemsComponent
                 this.inverters.add(inv);
                 LOG.info("Auto-discovered PV Inverter [{}] (alias: {})", id, comp.alias());
             }
+
+            // Check for SmartLogger
+            if (id.equals(this.config.smartLogger_id())) {
+                LOG.info("Configured SmartLogger found: [{}]", id);
+                if (comp instanceof ElectricityMeter meter && !this.meters.contains(meter)) {
+                    this.meters.add(meter);
+                }
+                if (comp instanceof ManagedSymmetricPvInverter inv && !this.inverters.contains(inv)) {
+                    this.inverters.add(inv);
+                }
+            }
         }
 
         // Sort by ID for consistent ordering
@@ -184,6 +195,15 @@ public class ControllerApiModbusEvnImpl extends AbstractOpenemsComponent
                 if (!this.inverters.contains(inv)) {
                     this.inverters.add(inv);
                     LOG.info("New PV Inverter discovered: [{}]", id);
+                }
+            }
+
+            if (id.equals(this.config.smartLogger_id())) {
+                if (comp instanceof ElectricityMeter meter && !this.meters.contains(meter)) {
+                    this.meters.add(meter);
+                }
+                if (comp instanceof ManagedSymmetricPvInverter inv && !this.inverters.contains(inv)) {
+                    this.inverters.add(inv);
                 }
             }
         }

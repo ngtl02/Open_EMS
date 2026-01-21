@@ -26,5 +26,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     @AttributeDefinition(name = "Redistribute on Fault", description = "Redistribute power to healthy inverters when one is faulted")
     boolean redistributeOnFault() default true;
 
+    @AttributeDefinition(name = "SmartLogger-ID", description = "ID of the Huawei SmartLogger (if used instead of individual components)")
+    String smartLogger_id() default "SmartLoggerHuawei0";
+
     String webconsole_configurationFactory_nameHint() default "Controller Api Modbus/TCP EVN [{id}]";
 }

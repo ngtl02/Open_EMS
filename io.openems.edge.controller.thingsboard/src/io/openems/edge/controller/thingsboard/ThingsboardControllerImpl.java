@@ -1,6 +1,8 @@
 package io.openems.edge.controller.thingsboard;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -12,11 +14,10 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import io.openems.common.channel.AccessMode;
+import io.openems.common.channel.Unit;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
@@ -24,29 +25,29 @@ import io.openems.edge.common.component.ComponentManager;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.controller.api.Controller;
 
-import org.eclipse.paho.mqttv5.client.IMqttClient;
-import org.eclipse.paho.mqttv5.client.MqttClient;
+import org.eclipse.paho.mqttv5.client.IMqttAsyncClient;
+import org.eclipse.paho.mqttv5.client.MqttAsyncClient;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
+import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
 
 @Designate(ocd = Config.class, factory = true)
-@Component(name = "Controller.ThingsBoard", immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(name = "Controller.IoT.AT-Energy", immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class ThingsboardControllerImpl extends AbstractOpenemsComponent implements Controller, OpenemsComponent {
 
     private final Logger log = LoggerFactory.getLogger(ThingsboardControllerImpl.class);
 
-    private static final String TB_TOPIC_TELEMETRY = "v1/gateway/telemetry";
-    private static final String TB_TOPIC_CONNECT = "v1/gateway/connect";
-    private static final String TB_TOPIC_DISCONNECT = "v1/gateway/disconnect";
+    // Single Device Mode - gửi trực tiếp đến device, không qua Gateway
+    private static final String TB_TOPIC_TELEMETRY = "v1/devices/me/telemetry";
 
     @Reference
     protected ComponentManager componentManager;
 
     private Config config;
 
-    private IMqttClient mqttClient;
+    private IMqttAsyncClient mqttClient;
 
     private int cycleCount = 0;
 
@@ -65,7 +66,6 @@ public class ThingsboardControllerImpl extends AbstractOpenemsComponent implemen
 
     @Deactivate
     protected void deactivate() {
-        this.sendDisconnectToAll();
         this.disconnectMqtt();
         super.deactivate();
     }
@@ -86,21 +86,18 @@ public class ThingsboardControllerImpl extends AbstractOpenemsComponent implemen
         }
 
         try {
-            JsonObject finalPayload = new JsonObject();
-            long timestamp = System.currentTimeMillis();
-
-            String[] targetIds = this.config.component_ids();
-            if (targetIds == null || targetIds.length == 0)
+            // Auto-detect các component PvInverter và Meter
+            List<OpenemsComponent> targetComponents = this.getTargetComponents();
+            if (targetComponents.isEmpty()) {
                 return;
+            }
 
-            for (String componentId : targetIds) {
-                OpenemsComponent component = this.getComponentById(componentId);
-                if (component == null)
-                    continue;
+            long timestamp = System.currentTimeMillis();
+            JsonObject values = new JsonObject();
+            boolean hasData = false;
 
-                String deviceName = getDeviceName(component);
-                JsonObject values = new JsonObject();
-                boolean hasData = false;
+            for (OpenemsComponent component : targetComponents) {
+                String componentPrefix = component.id() + "/";
 
                 for (Channel<?> channel : component.channels()) {
                     // Bỏ qua các channel WRITE_ONLY - chỉ gửi channel có thể đọc
@@ -109,32 +106,62 @@ public class ThingsboardControllerImpl extends AbstractOpenemsComponent implemen
                         continue;
                     }
 
-                    JsonElement jsonValue = channel.value().asJson();
-                    if (!jsonValue.isJsonNull()) {
-                        values.add(channel.channelId().id(), jsonValue);
+                    Object rawValue = channel.value().get();
+                    if (rawValue == null) {
+                        continue;
+                    }
+
+                    // Lấy unit và chuyển đổi giá trị
+                    Unit unit = channel.channelId().doc().getUnit();
+                    Object convertedValue = convertUnitValue(rawValue, unit);
+
+                    if (convertedValue != null) {
+                        String key = componentPrefix + channel.channelId().id();
+                        if (convertedValue instanceof Number) {
+                            values.addProperty(key, (Number) convertedValue);
+                        } else if (convertedValue instanceof Boolean) {
+                            values.addProperty(key, (Boolean) convertedValue);
+                        } else {
+                            values.addProperty(key, convertedValue.toString());
+                        }
                         hasData = true;
                     }
                 }
-
-                if (hasData) {
-                    JsonObject telemetryEntry = new JsonObject();
-                    telemetryEntry.addProperty("ts", timestamp);
-                    telemetryEntry.add("values", values);
-
-                    JsonArray telemetryArray = new JsonArray();
-                    telemetryArray.add(telemetryEntry);
-
-                    finalPayload.add(deviceName, telemetryArray);
-                }
             }
 
-            if (finalPayload.size() > 0) {
-                this.publish(TB_TOPIC_TELEMETRY, finalPayload.toString());
+            if (hasData) {
+                // Format cho Single Device: {"ts": ..., "values": {...}}
+                JsonObject payload = new JsonObject();
+                payload.addProperty("ts", timestamp);
+                payload.add("values", values);
+
+                this.publish(TB_TOPIC_TELEMETRY, payload.toString());
             }
 
         } catch (Exception e) {
             this.logError(this.log, "Run Error: " + e.getMessage());
         }
+    }
+
+    /**
+     * Tự động phát hiện các component PvInverter và Meter đang hoạt động.
+     * Lọc theo component ID pattern: bắt đầu bằng "meter" hoặc "pvInverter" (không phân biệt hoa thường).
+     * Được gọi mỗi chu kỳ để hỗ trợ runtime detection.
+     * 
+     * @return danh sách các component cần đẩy dữ liệu
+     */
+    private List<OpenemsComponent> getTargetComponents() {
+        List<OpenemsComponent> result = new ArrayList<>();
+        
+        for (OpenemsComponent component : this.componentManager.getEnabledComponents()) {
+            String id = component.id().toLowerCase();
+            // Lọc: component ID bắt đầu bằng "meter", "pvinverter" hoặc "smartlogger"
+            if (id.startsWith("meter") || id.startsWith("pvinverter") || id.startsWith("smartlogger")) {
+                result.add(component);
+            }
+        }
+        
+        return result;
     }
 
     private void publish(String topic, String payload) {
@@ -152,52 +179,93 @@ public class ThingsboardControllerImpl extends AbstractOpenemsComponent implemen
         }
     }
 
-    private OpenemsComponent getComponentById(String id) {
-        try {
-            return this.componentManager.getComponent(id);
-        } catch (OpenemsNamedException e) {
-            return null;
+    /**
+     * Chuyển đổi giá trị theo unit chuẩn hóa.
+     * - mA, mV, mW... → A, V, W (chia 1000)
+     * - W, var, VA, Wh, varh, VAh → kW, kvar, kVA, kWh, kvarh, kVAh (chia 1000)
+     * 
+     * @param value giá trị gốc
+     * @param unit  đơn vị của giá trị
+     * @return giá trị đã chuyển đổi
+     */
+    private Object convertUnitValue(Object value, Unit unit) {
+        if (value == null || unit == null) {
+            return value;
         }
-    }
 
-    private String getDeviceName(OpenemsComponent component) {
-        String alias = component.alias();
-        return (alias != null && !alias.trim().isEmpty()) ? alias.trim() : component.id();
-    }
-
-    private void sendConnectToAll() {
-        if (this.config.component_ids() == null)
-            return;
-        try {
-            for (String componentId : this.config.component_ids()) {
-                OpenemsComponent component = getComponentById(componentId);
-                if (component == null)
-                    continue;
-
-                JsonObject json = new JsonObject();
-                json.addProperty("device", getDeviceName(component));
-                this.publish(TB_TOPIC_CONNECT, json.toString());
-            }
-            this.logInfo(this.log, "Sent Connect signals.");
-        } catch (Exception e) {
-            // Ignored
+        // Nếu không phải số, trả về nguyên giá trị
+        if (!(value instanceof Number)) {
+            return value;
         }
-    }
 
-    private void sendDisconnectToAll() {
-        if (this.config.component_ids() == null)
-            return;
-        try {
-            for (String componentId : this.config.component_ids()) {
-                OpenemsComponent component = getComponentById(componentId);
-                String deviceName = (component != null) ? getDeviceName(component) : componentId;
+        double numValue = ((Number) value).doubleValue();
 
-                JsonObject json = new JsonObject();
-                json.addProperty("device", deviceName);
-                this.publish(TB_TOPIC_DISCONNECT, json.toString());
-            }
-        } catch (Exception e) {
-            // Ignored
+        // Chuyển đổi các unit milli → base (mA→A, mV→V, mW→W, mHz→Hz, mbar→bar, mOhm→Ohm)
+        switch (unit) {
+            case MILLIAMPERE:
+            case MILLIVOLT:
+            case MILLIWATT:
+            case MILLIHERTZ:
+            case MILLIBAR:
+            case MILLIOHM:
+            case MILLIAMPERE_HOURS:
+            case MILLISECONDS:
+                return numValue / 1000.0;
+
+            // Chuyển đổi các unit micro → base (uA→A, uV→V, uOhm→Ohm)
+            case MICROAMPERE:
+            case MICROVOLT:
+            case MICROOHM:
+                return numValue / 1000000.0;
+
+            // Chuyển đổi các unit dezi → base (dA→A, dV→V, dC→C)
+            case DEZIAMPERE:
+            case DEZIVOLT:
+            case DEZIDEGREE_CELSIUS:
+                return numValue / 10.0;
+
+            // Chuyển đổi W → kW, var → kvar, VA → kVA, Wh → kWh, etc.
+            case WATT:
+            case VOLT_AMPERE:
+            case VOLT_AMPERE_REACTIVE:
+            case WATT_HOURS:
+            case VOLT_AMPERE_HOURS:
+            case VOLT_AMPERE_REACTIVE_HOURS:
+            case CUMULATED_WATT_HOURS:
+            case AMPERE_HOURS:
+            case OHM:
+                return numValue / 1000.0;
+
+            // Các unit đã là kilo-level hoặc không cần chuyển đổi
+            case KILOWATT:
+            case KILOVOLT_AMPERE:
+            case KILOVOLT_AMPERE_REACTIVE:
+            case KILOWATT_HOURS:
+            case KILOVOLT_AMPERE_REACTIVE_HOURS:
+            case KILOAMPERE_HOURS:
+            case KILOOHM:
+            case VOLT:
+            case AMPERE:
+            case HERTZ:
+            case DEGREE_CELSIUS:
+            case PERCENT:
+            case BAR:
+            case SECONDS:
+            case MINUTE:
+            case HOUR:
+            case NONE:
+            case ON_OFF:
+            case THOUSANDTH:
+            case TENTHOUSANDTH:
+            case DECIMAL_DEGREE:
+            case MONEY_PER_MEGAWATT_HOUR:
+            case WATT_HOURS_BY_WATT_PEAK:
+            case CUMULATED_SECONDS:
+            case GRAMS_PER_CUBIC_METER:
+            case PARTS_PER_MILLION:
+            case KILOJOULES_PER_KILOGRAM:
+            default:
+                return value;
         }
     }
 
@@ -207,23 +275,44 @@ public class ThingsboardControllerImpl extends AbstractOpenemsComponent implemen
             String brokerUrl = "tcp://" + this.config.host() + ":" + this.config.port();
             String clientId = "OpenEMS_" + this.id();
 
-            // Khởi tạo MqttClient KHÔNG dùng MemoryPersistence (giống MqttConnector)
-            this.mqttClient = new MqttClient(brokerUrl, clientId);
+            // Sử dụng MemoryPersistence thay vì MqttDefaultFilePersistence
+            // Điều này tránh lỗi permission trên ARM Linux
+            this.mqttClient = new MqttAsyncClient(brokerUrl, clientId, new MemoryPersistence());
 
-            MqttConnectionOptions options = new MqttConnectionOptions();
-            options.setCleanStart(true);
+            var options = new MqttConnectionOptions();
             options.setUserName(this.config.accessToken());
-            options.setConnectionTimeout(10);
-            options.setKeepAliveInterval(60);
-            options.setAutomaticReconnect(true);
+            // ThingsBoard dùng accessToken làm username, password để trống
+            options.setPassword("".getBytes(StandardCharsets.UTF_8));
+            options.setAutomaticReconnect(false); // Tự xử lý reconnect
+            options.setCleanStart(true);
+            options.setConnectionTimeout(30);
 
-            this.mqttClient.connect(options);
-            this.logInfo(this.log, "Connected to ThingsBoard Cloud (MQTT v5)!");
-
-            this.sendConnectToAll();
+            // Kết nối async nhưng đợi hoàn thành với timeout
+            this.mqttClient.connect(options).waitForCompletion(30000);
+            this.logInfo(this.log, "Connected to ThingsBoard (Single Device Mode)");
 
         } catch (MqttException e) {
-            this.logError(this.log, "MQTT Connect Error: " + e.getMessage());
+            // Log chi tiết hơn để debug trên ARM Linux
+            this.logError(this.log, "MQTT Connect Error [RC:" + e.getReasonCode() + "]: " + e.getMessage());
+            
+            // Log root cause nếu có
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                this.logError(this.log, "MQTT Root Cause: " + cause.getClass().getName() + " - " + cause.getMessage());
+                
+                // Check nested causes
+                Throwable nested = cause.getCause();
+                if (nested != null) {
+                    this.logError(this.log, "MQTT Nested Cause: " + nested.getClass().getName() + " - " + nested.getMessage());
+                }
+            }
+            
+            // Log stack trace đầy đủ
+            this.log.error("MQTT Connection failed - Full stack trace:", e);
+        } catch (Exception e) {
+            // Catch các exception khác không phải MqttException
+            this.logError(this.log, "MQTT Unexpected Error: " + e.getClass().getName() + " - " + e.getMessage());
+            this.log.error("Unexpected error during MQTT connection:", e);
         }
     }
 
@@ -231,12 +320,13 @@ public class ThingsboardControllerImpl extends AbstractOpenemsComponent implemen
         try {
             if (this.mqttClient != null) {
                 if (this.mqttClient.isConnected()) {
-                    this.mqttClient.disconnect();
+                    this.mqttClient.disconnect().waitForCompletion(5000);
                 }
                 this.mqttClient.close();
             }
         } catch (MqttException e) {
             // Ignored
         }
+        this.mqttClient = null;
     }
 }

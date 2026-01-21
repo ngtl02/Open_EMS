@@ -226,8 +226,11 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
         try {
             // Reset channels
             this.channel(NetworkManager.ChannelId.LAN1_IP).setNextValue("Disconnected");
+            this.channel(NetworkManager.ChannelId.LAN1_GATEWAY).setNextValue("None");
             this.channel(NetworkManager.ChannelId.LAN2_IP).setNextValue("Disconnected");
+            this.channel(NetworkManager.ChannelId.LAN2_GATEWAY).setNextValue("None");
             this.channel(NetworkManager.ChannelId.MOBILE_IP).setNextValue("Disconnected");
+            this.channel(NetworkManager.ChannelId.MOBILE_GATEWAY).setNextValue("None");
 
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -244,10 +247,13 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
                 // Auto-map based on interface name
                 if (name.equals(IFACE_ETH0)) {
                     this.channel(NetworkManager.ChannelId.LAN1_IP).setNextValue(ipV4);
+                    this.channel(NetworkManager.ChannelId.LAN1_GATEWAY).setNextValue(this.getGatewayFromInterface(name));
                 } else if (name.equals(IFACE_ETH1)) {
                     this.channel(NetworkManager.ChannelId.LAN2_IP).setNextValue(ipV4);
+                    this.channel(NetworkManager.ChannelId.LAN2_GATEWAY).setNextValue(this.getGatewayFromInterface(name));
                 } else if (isMobileInterface(name)) {
                     this.channel(NetworkManager.ChannelId.MOBILE_IP).setNextValue(ipV4);
+                    this.channel(NetworkManager.ChannelId.MOBILE_GATEWAY).setNextValue(this.getGatewayFromInterface(name));
                 }
             }
         } catch (Exception e) {
@@ -422,6 +428,18 @@ public class NetworkManagerImpl extends AbstractOpenemsComponent
             this.logWarn(this.log, "Failed to get connection name for " + interfaceName + ": " + e.getMessage());
         }
         return null;
+    }
+
+    private String getGatewayFromInterface(String interfaceName) {
+        try {
+            // Command: ip route show dev eth0 | grep default | awk '{print $3}'
+            String cmd = "ip route show dev " + interfaceName + " | grep default | awk '{print $3}'";
+            String output = executeShellCommand(cmd).trim();
+            return output.isEmpty() ? "None" : output;
+        } catch (Exception e) {
+            this.logWarn(this.log, "Failed to get gateway for " + interfaceName + ": " + e.getMessage());
+        }
+        return "None";
     }
 
     private String getIPv4FromInterface(NetworkInterface iface) {

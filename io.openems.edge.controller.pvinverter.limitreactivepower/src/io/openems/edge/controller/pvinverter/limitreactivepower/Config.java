@@ -17,6 +17,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     @AttributeDefinition(name = "Is enabled?", description = "Is this Component enabled?")
     boolean enabled() default true;
 
+    @AttributeDefinition(name = "Meter-ID", description = "ID of the Grid Connection Point Meter")
+    String meter_id() default "meter0";
+
 
     @AttributeDefinition(name = "Allow EVN Control", description = "If true, allow EVN to control when enabled. If false, always use local control.")
     boolean allowEvnControl() default true;

@@ -10,16 +10,16 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.function.ThrowingRunnable;
 import io.openems.edge.common.channel.IntegerWriteChannel;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
-import io.openems.edge.pvinverter.solis.hybrid.PvInverterSolisHybrid.ChannelId;
+import io.openems.edge.pvinverter.solis.ongrid.PvInverterSolisOnGrid.ChannelId;
 
 /**
  * SetPvLimitHandler for Solis OnGrid inverter.
  * 
  * Input: Reads power limit from ACTIVE_POWER_LIMIT channel (in Watts).
- * Output: Writes to registers 3070 (enable), 3081 (power limit).
+ * Output: Writes scaled value to P_LIMIT channel (Modbus register 3081).
  * 
- * IMPORTANT: Do NOT read from ACTIVE_POWER_LIMIT_PERCENT as input because
- * writing to the same channel we read from would cause a feedback loop.
+ * IMPORTANT: Do NOT write back to ACTIVE_POWER_LIMIT to avoid feedback loop!
+ * Solis OnGrid uses 1 unit = 10W for the power limit register.
  */
 public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException> {
 
@@ -27,8 +27,8 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 	private final PvInverterSolisOnGridImpl parent;
 	private final ManagedSymmetricPvInverter.ChannelId channelId;
 
-	private Integer lastPLimitPerc = null;
-	private LocalDateTime lastPLimitPercTime = LocalDateTime.MIN;
+	private Integer lastPowerW = null;
+	private LocalDateTime lastWriteTime = LocalDateTime.MIN;
 
 	public SetPvLimitHandler(PvInverterSolisOnGridImpl parent, ManagedSymmetricPvInverter.ChannelId activePowerLimit) {
 		this.parent = parent;
@@ -37,47 +37,43 @@ public class SetPvLimitHandler implements ThrowingRunnable<OpenemsNamedException
 
 	@Override
 	public void run() throws OpenemsNamedException {
-		// ONLY read from VALUE channel (W) - this is the input from EVN controller
-		// DO NOT read from percentage channel as it could cause feedback loop
-		IntegerWriteChannel valueChannel = this.parent.channel(this.channelId);
-		var valueOpt = valueChannel.getNextWriteValueAndReset();
+		// Read from INPUT channel (Watts) - this is the command from Controller
+		IntegerWriteChannel inputChannel = this.parent.channel(this.channelId);
+		var valueOpt = inputChannel.getNextWriteValueAndReset();
 
 		if (!valueOpt.isPresent()) {
-			// No command from EVN - do nothing, let the last value persist
+			// No new command - do nothing
 			return;
 		}
 
-		// EVN sent VALUE (W) - calculate percentage
-		int power = valueOpt.get();
-		int pLimitPerc = (int) ((double) power / (double) this.parent.config.maxActivePower() * 100.0);
+		int powerW = valueOpt.get();
 
-		// keep percentage in range [0, 100]
-		if (pLimitPerc > 100) {
-			pLimitPerc = 100;
-		}
-		if (pLimitPerc < 0) {
-			pLimitPerc = 0;
+		// Skip if same value and not timeout
+		if (Objects.equals(this.lastPowerW, powerW) && this.lastWriteTime
+				.isAfter(LocalDateTime.now().minusSeconds(150))) {
+			return;
 		}
 
-		if (!Objects.equals(this.lastPLimitPerc, pLimitPerc) || this.lastPLimitPercTime
-				.isBefore(LocalDateTime.now().minusSeconds(150 /* watchdog timeout is 300 */))) {
-			// Value needs to be set
-			this.parent.logInfo(this.log, "Apply new limit: " + power + " W (" + pLimitPerc + " %)");
+		// Calculate scaled value: Solis OnGrid uses 1 unit = 10W
+		int scaledValue = powerW / 10;
 
-			// Enable power limitation (register 3070): 0xAA = ON
-			IntegerWriteChannel pRemoteCtrl = this.parent.channel(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL);
-			pRemoteCtrl.setNextWriteValue(0xAA);
+		// Calculate percentage for logging
+		int pLimitPerc = (int) ((double) powerW / (double) this.parent.config.maxActivePower() * 100.0);
+		pLimitPerc = Math.max(0, Math.min(100, pLimitPerc));
 
-			// Write value to register 3081: 1 unit = 10W
-			IntegerWriteChannel activePowerLimitCh = this.parent
-					.channel(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT);
-			activePowerLimitCh.setNextWriteValue(power / 10); // Solis uses gain=10 (1 unit = 10W)
+		this.parent.logInfo(this.log,
+				"Apply P limit: " + powerW + " W (" + pLimitPerc + " %) -> register: " + scaledValue);
 
-			IntegerWriteChannel watchDogTagCh = this.parent.channel(ChannelId.WATCH_DOG_TAG);
-			watchDogTagCh.setNextWriteValue((int) System.currentTimeMillis());
+		// Enable power limitation (register 3070): 0xAA = ON
+		IntegerWriteChannel pRemoteCtrl = this.parent.channel(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL);
+		pRemoteCtrl.setNextWriteValue(0xAA);
 
-			this.lastPLimitPerc = pLimitPerc;
-			this.lastPLimitPercTime = LocalDateTime.now();
-		}
+		// Write SCALED value to P_LIMIT channel (register 3081)
+		// NOTE: P_LIMIT is mapped to Modbus register, NOT ACTIVE_POWER_LIMIT!
+		IntegerWriteChannel pLimitCh = this.parent.channel(ChannelId.P_LIMIT);
+		pLimitCh.setNextWriteValue(scaledValue);
+
+		this.lastPowerW = powerW;
+		this.lastWriteTime = LocalDateTime.now();
 	}
 }

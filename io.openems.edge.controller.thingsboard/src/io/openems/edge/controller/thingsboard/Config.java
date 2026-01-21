@@ -4,8 +4,8 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(
-    name = "Controller ThingsBoard Gateway",
-    description = "Đẩy dữ liệu OpenEMS lên ThingsBoard Cloud qua MQTT (Gateway Mode)")
+    name = "Controller IoT AT-Energy",
+    description = "Đẩy dữ liệu OpenEMS lên ThingsBoard Cloud qua MQTT (Single Device Mode). Tự động phát hiện PvInverter và Meter.")
 @interface Config {
 
     @AttributeDefinition(name = "Component-ID", description = "Unique ID của component này")
@@ -23,15 +23,11 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     @AttributeDefinition(name = "Port", description = "Cổng MQTT")
     int port() default 1883;
 
-    @AttributeDefinition(name = "Access Token", description = "Token Gateway")
+    @AttributeDefinition(name = "Access Token", description = "Device Access Token")
     String accessToken() default "";
 
     @AttributeDefinition(name = "Cycle Time", description = "Chu kỳ gửi dữ liệu (giây)")
     int cycleTime() default 5;
 
-    // --- THÊM MỚI: DANH SÁCH THIẾT BỊ ---
-    @AttributeDefinition(name = "Target Component-IDs", description = "Danh sách ID các thiết bị muốn đẩy lên Cloud (VD: meter0, ess0, _sum)")
-    String[] component_ids() default { "_sum" };
-
-    String webconsole_configurationFactory_nameHint() default "Controller ThingsBoard [{id}]";
+    String webconsole_configurationFactory_nameHint() default "Controller IoT AT-Energy [{id}]";
 }

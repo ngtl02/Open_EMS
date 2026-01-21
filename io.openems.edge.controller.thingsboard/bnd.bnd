@@ -1,5 +1,5 @@
-Bundle-Name: OpenEMS Edge Controller Api Thingsboard
-Bundle-Vendor: FENECON GmbH
+Bundle-Name: OpenEMS Edge Controller Api AT_Energy
+Bundle-Vendor: AT_Energy
 Bundle-License: https://opensource.org/licenses/EPL-2.0
 Bundle-Version: 1.0.0.${tstamp}
 

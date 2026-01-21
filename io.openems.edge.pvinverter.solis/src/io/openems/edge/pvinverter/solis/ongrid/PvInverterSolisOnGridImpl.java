@@ -192,7 +192,7 @@ public class PvInverterSolisOnGridImpl extends AbstractOpenemsModbusComponent
 				new FC6WriteRegisterTask(3071, //
 						m(ManagedSymmetricPvInverter.ChannelId.REMOTE_CONTROL_Q, new UnsignedWordElement(3071))),
 				new FC16WriteRegistersTask(3081,
-						m(ManagedSymmetricPvInverter.ChannelId.ACTIVE_POWER_LIMIT, new SignedWordElement(3081)),
+						m(PvInverterSolisOnGrid.ChannelId.P_LIMIT, new SignedWordElement(3081)),  // Scaled: 1 unit = 10W
 						new DummyRegisterElement(3082, 3082),
 						m(ManagedSymmetricPvInverter.ChannelId.REACTIVE_POWER_LIMIT, new SignedWordElement(3083))));
 	}

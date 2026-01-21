@@ -10,8 +10,11 @@ public interface NetworkManager extends OpenemsComponent {
     public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
         // 3 Channel hiển thị IP riêng biệt
         LAN1_IP(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).text("IP of eth0")),
+        LAN1_GATEWAY(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).text("Gateway of eth0")),
         LAN2_IP(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).text("IP of eth1")),
+        LAN2_GATEWAY(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).text("Gateway of eth1")),
         MOBILE_IP(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).text("IP of 4G")),
+        MOBILE_GATEWAY(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).text("Gateway of 4G")),
 
         LAST_ERROR_MESSAGE(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY));
 

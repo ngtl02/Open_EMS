@@ -122,7 +122,7 @@ public class PvInverterHuaweiOnGridImpl extends AbstractOpenemsModbusComponent
 		return new ModbusProtocol(this,
 				new FC4ReadInputRegistersTask(32016, Priority.HIGH,
 						m(PvInverterHuaweiHybrid.ChannelId.PV1_VOLTAGE,
-								new SignedWordElement(32016), SCALE_FACTOR_2),
+								new SignedWordElement(32016), SCALE_FACTOR_2), 
 						m(PvInverterHuaweiHybrid.ChannelId.PV1_AMPERE,
 								new SignedWordElement(32017), SCALE_FACTOR_1),
 						m(PvInverterHuaweiHybrid.ChannelId.PV2_VOLTAGE,

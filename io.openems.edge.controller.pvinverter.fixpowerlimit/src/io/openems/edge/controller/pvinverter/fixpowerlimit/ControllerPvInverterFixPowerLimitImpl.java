@@ -1,7 +1,9 @@
 package io.openems.edge.controller.pvinverter.fixpowerlimit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -23,27 +25,19 @@ import io.openems.edge.meter.api.ElectricityMeter;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 
 /**
- * Controller for Active Power control of all PV inverters.
+ * Controller for Active Power (P) control of all PV inverters.
  * 
  * <p>
- * This controller implements closed-loop control to make meter0's active power
- * match the target setpoint. The setpoint represents the desired grid export power.
- * 
- * <p>
- * Control Logic:
- * <ul>
- * <li>If meter0.activePower < setpoint: Need MORE export → increase inverter limits</li>
- * <li>If meter0.activePower > setpoint: Need LESS export → decrease inverter limits</li>
- * </ul>
+ * This controller implements closed-loop control to make the grid connection
+ * point (meter0) match the target setpoint from EVN or local configuration.
  * 
  * <p>
  * Features:
  * <ul>
- * <li>Auto-discovers all PV inverters (pvInverterX)</li>
- * <li>Reads setpoints from EVN controller when P_OUT_ENABLED = true</li>
- * <li>Implements closed-loop control using meter0 feedback</li>
- * <li>Falls back to local fixed values when EVN control is disabled</li>
- * <li>Distributes power proportionally based on inverter max power rating</li>
+ * <li>Detect which setpoint changed (Watt or Percent)</li>
+ * <li>Convert Percent to Watt: targetW = percent/100 × totalSystemPower</li>
+ * <li>Dynamic inverter handling: only control working inverters</li>
+ * <li>Rate limiting to prevent oscillation</li>
  * </ul>
  */
 @Designate(ocd = Config.class, factory = true)
@@ -62,19 +56,36 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
     private static final String EVN_CONTROLLER_ID = "ctrlEvnModbus0";
     
     // Control parameters
-    private static final float P_GAIN = 0.8f;  // Proportional gain for closed-loop (higher = faster response)
-    private static final int DEADBAND_W = 100; // Deadband in Watts
+    private static final int DEADBAND_W = 100;
+    private static final int MAX_ADJUSTMENT_PER_CYCLE_W = 10000; // Max 2kW change per cycle
+    private static final float EPSILON = 0.01f; // For float comparison
 
     @Reference
     private ComponentManager componentManager;
 
     private Config config;
 
-    // Discovered inverters
-    private List<ManagedSymmetricPvInverter> inverters = new ArrayList<>();
+    // All discovered inverters
+    private List<ManagedSymmetricPvInverter> allInverters = new ArrayList<>();
     
-    // Auto-calculated total system power
+    // Total system power (all inverters)
     private int totalSystemPowerW = 0;
+    
+    // Previous setpoints for change detection
+    private float lastEvnPercent = 0f;
+    private int lastEvnWatt = 0;
+    
+    // Track which mode is active
+    private boolean usePercentMode = false;
+    
+    // Store previous limit per inverter ID (use Map for dynamic handling)
+    private Map<String, Integer> previousLimits = new HashMap<>();
+    
+    // Discovery debounce
+    private long lastDiscoveryTime = 0;
+    
+    // Flag to indicate if EVN has sent any command
+    private boolean evnCommandReceived = false;
 
     public ControllerPvInverterFixPowerLimitImpl() {
         super(//
@@ -93,38 +104,67 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
         this.discoverInverters();
 
         this.logInfo(this.log, "Activated with EVN controller: " + EVN_CONTROLLER_ID
-                + ", Found " + this.inverters.size() + " inverters"
+                + ", Found " + this.allInverters.size() + " inverters"
                 + ", Total system power: " + this.totalSystemPowerW + "W");
     }
 
     private void discoverInverters() {
-        this.inverters.clear();
+        this.allInverters.clear();
 
         for (OpenemsComponent comp : this.componentManager.getAllComponents()) {
-            if (comp.id().startsWith(PVINVERTER_ID_PREFIX)
-                    && comp instanceof ManagedSymmetricPvInverter
+            if (comp instanceof ManagedSymmetricPvInverter
                     && comp.isEnabled()) {
-                this.inverters.add((ManagedSymmetricPvInverter) comp);
+                this.allInverters.add((ManagedSymmetricPvInverter) comp);
             }
         }
 
         // Sort by ID
-        this.inverters.sort((a, b) -> a.id().compareTo(b.id()));
+        this.allInverters.sort((a, b) -> a.id().compareTo(b.id()));
         
-        // Calculate total system power from inverters (all inverters save to MaxApparentPower)
-        this.totalSystemPowerW = this.inverters.stream()
+        // Calculate total system power
+        this.totalSystemPowerW = this.allInverters.stream()
                 .mapToInt(inv -> inv.getMaxApparentPower().orElse(0))
                 .sum();
+        
+        // Initialize previous limits for new inverters
+        for (ManagedSymmetricPvInverter inv : this.allInverters) {
+            if (!this.previousLimits.containsKey(inv.id())) {
+                // New inverter - initialize with max power (no limit)
+                int maxP = inv.getMaxApparentPower().orElse(0);
+                this.previousLimits.put(inv.id(), maxP);
+            }
+        }
+    }
+
+    /**
+     * Get list of currently working inverters.
+     * An inverter is considered "working" if:
+     * - It's enabled
+     * - It has valid ActivePower reading (not null/undefined)
+     * - No fault state (optional: can add more checks)
+     */
+    private List<ManagedSymmetricPvInverter> getWorkingInverters() {
+        List<ManagedSymmetricPvInverter> working = new ArrayList<>();
+        
+        for (ManagedSymmetricPvInverter inv : this.allInverters) {
+            // Check if inverter is responding (has valid power reading)
+            if (inv.getActivePower().isDefined()) {
+                working.add(inv);
+            } else {
+                this.logDebug(this.log, "Inverter " + inv.id() + " not responding, excluded from control");
+            }
+        }
+        
+        return working;
     }
 
     @Override
     @Deactivate
     protected void deactivate() {
-        // Reset all inverter limits (remove limits)
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
+        // Reset all inverter limits
+        for (ManagedSymmetricPvInverter inv : this.allInverters) {
             try {
                 inv.setActivePowerLimit(null);
-                inv.setActivePowerLimitPercent(null);
             } catch (Exception e) {
                 this.logError(this.log, "Error resetting inverter " + inv.id() + ": " + e.getMessage());
             }
@@ -134,20 +174,24 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
 
     @Override
     public void run() throws OpenemsNamedException {
-        // Refresh inverters occasionally
-        if (System.currentTimeMillis() % 30000 < 1000) {
+        // Refresh inverters periodically
+        if (System.currentTimeMillis() - this.lastDiscoveryTime > 30000) {
             this.discoverInverters();
+            this.lastDiscoveryTime = System.currentTimeMillis();
         }
 
-        if (this.inverters.isEmpty()) {
-            this.logWarn(this.log, "No PV inverters found");
+        // Get working inverters for this cycle
+        List<ManagedSymmetricPvInverter> workingInverters = this.getWorkingInverters();
+        
+        if (workingInverters.isEmpty()) {
+            this.logWarn(this.log, "No working PV inverters found");
             return;
         }
 
         // Determine target setpoint
         int targetGridPowerW = 0;
-        int targetPercent = -1; // -1 means not using percent mode
         boolean evnEnabled = false;
+        boolean hasValidSetpoint = false;
 
         // Check EVN control
         if (this.config.allowEvnControl()) {
@@ -159,12 +203,36 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
                     float evnPercent = evn.getPOutSetpointPercent().orElse(0f);
                     int evnWatt = evn.getPOutSetpointWatt().orElse(0);
 
-                    if (evnPercent > 0) {
-                        // Percentage mode from EVN
-                        targetPercent = (int) evnPercent;
-                    } else {
-                        // Watt mode from EVN - use closed-loop control
-                        targetGridPowerW = evnWatt;
+                    // Detect which setpoint changed (use epsilon for float)
+                    boolean percentChanged = Math.abs(evnPercent - this.lastEvnPercent) > EPSILON;
+                    boolean wattChanged = (evnWatt != this.lastEvnWatt);
+                    
+                    if (percentChanged || wattChanged) {
+                        this.evnCommandReceived = true;
+                    }
+                    
+                    if (percentChanged && !wattChanged) {
+                        this.usePercentMode = true;
+                    } else if (wattChanged && !percentChanged) {
+                        this.usePercentMode = false;
+                    } else if (percentChanged && wattChanged) {
+                        // Both changed → prefer non-zero
+                        this.usePercentMode = (evnPercent != 0 && evnWatt == 0);
+                    }
+                    
+                    // Update last values
+                    this.lastEvnPercent = evnPercent;
+                    this.lastEvnWatt = evnWatt;
+                    
+                    // Check if we have valid setpoint
+                    if (evnPercent != 0 || evnWatt != 0 || this.evnCommandReceived) {
+                        hasValidSetpoint = true;
+                        
+                        if (this.usePercentMode) {
+                            targetGridPowerW = (int) (evnPercent / 100f * this.totalSystemPowerW);
+                        } else {
+                            targetGridPowerW = evnWatt;
+                        }
                     }
                 }
             } catch (OpenemsNamedException e) {
@@ -172,108 +240,81 @@ public class ControllerPvInverterFixPowerLimitImpl extends AbstractOpenemsCompon
             }
         }
 
-        // Local control mode
-        if (!evnEnabled) {
+        // Local control mode (fallback)
+        if (!evnEnabled || !hasValidSetpoint) {
+            hasValidSetpoint = true;
             if (this.config.usePercentage()) {
-                targetPercent = this.config.powerLimitPercent();
+                targetGridPowerW = (int) (this.config.powerLimitPercent() / 100f * this.totalSystemPowerW);
             } else {
                 targetGridPowerW = this.config.powerLimit();
             }
         }
 
-        // Apply control
-        if (targetPercent >= 0) {
-            // Percentage mode - apply directly to inverters
-            this.applyPercentageLimit(targetPercent);
-        } else {
-            // Watt mode - closed-loop control with meter feedback
-            this.applyClosedLoopControl(targetGridPowerW);
+        if (!hasValidSetpoint) {
+            return; // No control needed
         }
-    }
 
-    /**
-     * Apply percentage limit to all inverters.
-     * In percentage mode, we directly set the percentage without meter feedback.
-     */
-    private void applyPercentageLimit(int percent) {
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
-            try {
-                inv.setActivePowerLimitPercent(percent);
-            } catch (Exception e) {
-                this.logError(this.log, "Error setting limit for " + inv.id() + ": " + e.getMessage());
-            }
-        }
-        this.logDebug(this.log, "Applied " + percent + "% limit to " + this.inverters.size() + " inverters");
+        // Apply closed-loop control
+        this.applyClosedLoopControl(targetGridPowerW, workingInverters);
     }
 
     /**
      * Closed-loop control to match grid power to setpoint.
-     * Uses meter feedback to adjust inverter limits proportionally.
-     * 
-     * <p>
-     * The setpoint is the TARGET active power at meter0 (grid connection point).
-     * This controller adjusts inverter limits to make meter0.activePower match setpoint.
-     * 
-     * @param targetGridPowerW Target grid power at meter0 in Watts (positive = export to grid)
      */
-    private void applyClosedLoopControl(int targetGridPowerW) throws OpenemsNamedException {
-        // Get actual grid power from meter0
-        ElectricityMeter meter = this.componentManager.getComponent(DEFAULT_METER_ID);
+    private void applyClosedLoopControl(int targetGridPowerW, List<ManagedSymmetricPvInverter> workingInverters) 
+            throws OpenemsNamedException {
+        
+        // Get actual grid power from configured meter
+        ElectricityMeter meter = this.componentManager.getComponent(this.config.meter_id());
         int actualGridPowerW = meter.getActivePower().orElse(0);
 
-        // Calculate error: how much MORE power we need at the grid point
-        // Positive error = need more export = increase inverter output
-        // Negative error = need less export = decrease inverter output
+        // Calculate error
         int errorW = targetGridPowerW - actualGridPowerW;
 
-        // Check deadband - no action needed if within tolerance
+        // Check deadband
         if (Math.abs(errorW) <= DEADBAND_W) {
-            this.logDebug(this.log, String.format(
-                    "Within deadband: target=%dW, actual=%dW, error=%dW",
-                    targetGridPowerW, actualGridPowerW, errorW));
             return;
         }
 
-        // Get current total inverter production
-        int currentTotalProductionW = 0;
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
-            currentTotalProductionW += inv.getActivePower().orElse(0);
+        // Calculate adjustment per inverter (only working ones)
+        int numWorkingInverters = workingInverters.size();
+        if (numWorkingInverters == 0) {
+            return;
         }
-
-        // Calculate new total limit based on error
-        // If error is positive (need more), increase limits
-        // If error is negative (need less), decrease limits
-        int adjustmentW = (int) (errorW * P_GAIN);
-        int newTotalLimitW = currentTotalProductionW + adjustmentW;
         
-        // Clamp to valid range [0, totalSystemPowerW]
-        newTotalLimitW = Math.max(0, Math.min(newTotalLimitW, this.totalSystemPowerW));
+        int adjustmentPerInverterW = errorW / numWorkingInverters;
+        
+        // Apply rate limiting
+        adjustmentPerInverterW = Math.max(-MAX_ADJUSTMENT_PER_CYCLE_W, 
+                Math.min(adjustmentPerInverterW, MAX_ADJUSTMENT_PER_CYCLE_W));
 
-        // Distribute to each inverter proportionally based on max power rating
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
+        // Apply to each working inverter
+        for (ManagedSymmetricPvInverter inv : workingInverters) {
             int maxP = inv.getMaxApparentPower().orElse(0);
             if (maxP <= 0) {
-                continue; // Skip if no max power defined
+                continue;
             }
             
-            // Calculate ratio based on max power
-            float ratio = (this.totalSystemPowerW > 0) 
-                    ? (float) maxP / this.totalSystemPowerW 
-                    : 1.0f / this.inverters.size();
+            // Get previous limit (default to max power if not found)
+            int prevLimit = this.previousLimits.getOrDefault(inv.id(), maxP);
             
-            // Calculate new limit for this inverter
-            int newLimit = (int) (newTotalLimitW * ratio);
-            newLimit = Math.max(0, Math.min(newLimit, maxP)); // Clamp to valid range
+            // Calculate new limit
+            int newLimit = prevLimit + adjustmentPerInverterW;
+            
+            // Clamp to valid range [0, maxP]
+            newLimit = Math.max(0, Math.min(newLimit, maxP));
 
             try {
                 inv.setActivePowerLimit(newLimit);
+                this.previousLimits.put(inv.id(), newLimit);
             } catch (Exception e) {
                 this.logError(this.log, "Error setting limit for " + inv.id() + ": " + e.getMessage());
             }
         }
 
         this.logDebug(this.log, String.format(
-                "P Closed-loop: target=%dW, actual=%dW, error=%dW, currentProd=%dW, newLimit=%dW",
-                targetGridPowerW, actualGridPowerW, errorW, currentTotalProductionW, newTotalLimitW));
+                "P Control: target=%dW, actual=%dW, error=%dW, working=%d/%d, adj/inv=%dW",
+                targetGridPowerW, actualGridPowerW, errorW, 
+                numWorkingInverters, this.allInverters.size(), adjustmentPerInverterW));
     }
 }

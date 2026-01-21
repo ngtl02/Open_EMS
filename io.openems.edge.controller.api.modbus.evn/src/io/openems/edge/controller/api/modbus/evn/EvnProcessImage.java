@@ -72,6 +72,7 @@ public class EvnProcessImage implements ProcessImage {
     private final ComponentManager componentManager;
     private final List<ElectricityMeter> meters;
     private final List<ManagedSymmetricPvInverter> inverters;
+    private final String smartLoggerId;
 
     /**
      * Holding Registers array - these are the registers that EVN can write to.
@@ -89,10 +90,12 @@ public class EvnProcessImage implements ProcessImage {
      */
     public EvnProcessImage(ComponentManager componentManager, 
                            List<ElectricityMeter> meters,
-                           List<ManagedSymmetricPvInverter> inverters) {
+                           List<ManagedSymmetricPvInverter> inverters,
+                           String smartLoggerId) {
         this.componentManager = componentManager;
         this.meters = new ArrayList<>(meters);
         this.inverters = new ArrayList<>(inverters);
+        this.smartLoggerId = smartLoggerId;
 
         // Initialize holding registers for control commands
         this.holdingRegisters = new SimpleRegister[MAX_REGISTER_ADDRESS];
@@ -124,6 +127,32 @@ public class EvnProcessImage implements ProcessImage {
                 EvnWriteRegisters.Q_OUT_SETPOINT_PERCENT_ADDRESS + 1,
                 EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS,
                 EvnWriteRegisters.Q_OUT_SETPOINT_KVAR_ADDRESS + 1);
+        
+        LOG.info("SmartLogger ID configured: {}", smartLoggerId);
+    }
+    
+    // Flag to log SmartLogger channels only once
+    private boolean hasLoggedSmartLoggerChannels = false;
+    
+    /**
+     * Debug: Log all SmartLogger channels (called lazily when SmartLogger is available)
+     */
+    private void logSmartLoggerChannelsOnce() {
+        if (hasLoggedSmartLoggerChannels || this.smartLoggerId == null || this.smartLoggerId.isEmpty()) {
+            return;
+        }
+        try {
+            OpenemsComponent smartLogger = this.componentManager.getComponent(this.smartLoggerId);
+            LOG.info("=== SmartLogger [{}] available channels ===", this.smartLoggerId);
+            smartLogger.channels().forEach(ch -> {
+                LOG.info("  Channel: {} = {}", ch.channelId().id(), ch.value().asString());
+            });
+            LOG.info("=== End of SmartLogger channels ===");
+            hasLoggedSmartLoggerChannels = true;
+        } catch (Exception e) {
+            // SmartLogger not ready yet, will try again later
+            LOG.debug("SmartLogger not ready yet: {}", e.getMessage());
+        }
     }
 
     /**
@@ -133,20 +162,26 @@ public class EvnProcessImage implements ProcessImage {
         try {
             Channel<?> channel = component.channel(channelId);
             if (channel == null) {
+                LOG.debug("Channel {} not found on component {}", channelId, component.id());
                 return 0f;
             }
 
             var value = channel.value();
             if (!value.isDefined()) {
+                LOG.debug("Channel {}/{} value is not defined", component.id(), channelId);
                 return 0f;
             }
 
             Object obj = value.get();
             if (obj instanceof Number) {
-                return ((Number) obj).floatValue();
+                float result = ((Number) obj).floatValue();
+                LOG.debug("Read {}/{} = {}", component.id(), channelId, result);
+                return result;
             }
+            LOG.debug("Channel {}/{} value is not a Number: {}", component.id(), channelId, obj);
             return 0f;
         } catch (IllegalArgumentException e) {
+            LOG.debug("IllegalArgumentException reading channel {}/{}: {}", component.id(), channelId, e.getMessage());
             return 0f;
         }
     }
@@ -177,6 +212,20 @@ public class EvnProcessImage implements ProcessImage {
     }
 
     /**
+     * Reads a value from a custom component and channel name.
+     */
+    private float readCustomChannelFloat(String componentId, String channelId) {
+        try {
+            OpenemsComponent comp = this.componentManager.getComponent(componentId);
+            LOG.debug("Looking up channel {} on component {}", channelId, componentId);
+            return readChannelFloat(comp, channelId);
+        } catch (Exception e) {
+            LOG.warn("Error getting component {} or channel {}: {}", componentId, channelId, e.getMessage());
+            return 0f;
+        }
+    }
+
+    /**
      * Gets the first meter or null.
      */
     private ElectricityMeter getFirstMeter() {
@@ -188,11 +237,17 @@ public class EvnProcessImage implements ProcessImage {
      * Returns scaled float value in EVN units (kW, V, A, Hz).
      */
     private float readMonitoringValue(int address) {
+        // Try to log SmartLogger channels once (for debugging)
+        this.logSmartLoggerChannelsOnce();
+        
         ElectricityMeter meter = getFirstMeter();
         
         // Static monitoring registers (1-24)
         switch (address) {
-            case 1: case 2: // Grid Active Power (kW) - _sum
+            case 1: case 2: // Grid Active Power (kW) - _sum or SmartLogger
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "ActivePower") * 0.001f; // W -> kW
+                }
                 try {
                     OpenemsComponent sum = this.componentManager.getComponent("_sum");
                     return readChannelFloat(sum, "GridActivePower") * 0.001f; // W -> kW
@@ -217,24 +272,82 @@ public class EvnProcessImage implements ProcessImage {
                 }
                 
             case 7: case 8: // Grid Reactive Power (kVar) - from meter
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "meter/ReactivePower") * 0.001f;
+                }
                 if (meter != null) {
                     return readChannelFloat(meter, "ReactivePower") * 0.001f; // var -> kVar
                 }
                 return 0f;
                 
             case 9: case 10: // Voltage L1 (V) - first meter
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "VoltageL1") * 0.001f; // mV -> V
+                }
                 if (meter != null) {
                     return readChannelFloat(meter, "VoltageL1") * 0.001f; // mV -> V
                 }
                 return 0f;
                 
+            case 11: case 12: // Voltage L2 (V)
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "VoltageL2") * 0.001f; // mV -> V
+                }
+                if (meter != null) {
+                    return readChannelFloat(meter, "VoltageL2") * 0.001f; // mV -> V
+                }
+                return 0f;
+                
+            case 13: case 14: // Voltage L3 (V)
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "VoltageL3") * 0.001f; // mV -> V
+                }
+                if (meter != null) {
+                    return readChannelFloat(meter, "VoltageL3") * 0.001f; // mV -> V
+                }
+                return 0f;
+                
+            case 15: case 16: // Phase A Current (A)
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "CurrentL1") * 0.001f; // mA -> A
+                }
+                if (meter != null) {
+                    return readChannelFloat(meter, "CurrentL1") * 0.001f; // mA -> A
+                }
+                return 0f;
+                
+            case 17: case 18: // Phase B Current (A)
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "CurrentL2") * 0.001f; // mA -> A
+                }
+                if (meter != null) {
+                    return readChannelFloat(meter, "CurrentL2") * 0.001f; // mA -> A
+                }
+                return 0f;
+                
+            case 19: case 20: // Phase C Current (A)
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "CurrentL3") * 0.001f; // mA -> A
+                }
+                if (meter != null) {
+                    return readChannelFloat(meter, "CurrentL3") * 0.001f; // mA -> A
+                }
+                return 0f;
+                
             case 21: case 22: // Frequency (Hz) - first meter
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    return readCustomChannelFloat(this.smartLoggerId, "Frequency") * 0.001f; // mHz -> Hz
+                }
                 if (meter != null) {
                     return readChannelFloat(meter, "Frequency") * 0.001f; // mHz -> Hz
                 }
                 return 0f;
                 
             case 23: case 24: // Power Factor - first meter
+                if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+                    // PowerFactor channel: OpenEMS normalizes to "Meter/powerFactor"
+                    return readCustomChannelFloat(this.smartLoggerId, "Meter/powerFactor") ;
+                }
                 if (meter != null) {
                     // Some meters expose Pf in different scales
                     float pf = readChannelFloat(meter, "Pf");
@@ -262,7 +375,25 @@ public class EvnProcessImage implements ProcessImage {
         int inverterIndex = relativeAddr / REGISTERS_PER_INVERTER;
         int registerOffset = relativeAddr % REGISTERS_PER_INVERTER;
         
-        if (inverterIndex < 0 || inverterIndex >= this.inverters.size()) {
+        if (inverterIndex < 0) {
+            return 0f;
+        }
+
+        if (this.smartLoggerId != null && !this.smartLoggerId.isEmpty()) {
+            // Read from SmartLogger virtual inverter channels
+            // OpenEMS normalizes channel names: "pvInverter1/ActivePower" -> "Pvinverter1/activepower"
+            int addr = inverterIndex + 1; 
+            switch (registerOffset) {
+                case 0: case 1: // Active Power (kW)
+                    return readCustomChannelFloat(this.smartLoggerId, "Pvinverter" + addr + "/activepower") * 0.001f;
+                case 2: case 3: // Reactive Power (kvar) - using reactivepower instead of ActiveProductionEnergy
+                    return readCustomChannelFloat(this.smartLoggerId, "Pvinverter" + addr + "/reactivepower") * 0.001f;
+                default:
+                    return 0f;
+            }
+        }
+
+        if (inverterIndex >= this.inverters.size()) {
             return 0f;
         }
         
@@ -283,12 +414,10 @@ public class EvnProcessImage implements ProcessImage {
      * Gets the base address for a float register pair.
      */
     private int getFloatBaseAddress(int address) {
-        // Static registers: 1-2, 3-4, 5-6, 7-8, 9-10, 21-22, 23-24
-        if (address >= 1 && address <= 10) {
+        // Static monitoring registers: 1-24 (all are float pairs)
+        // 1-2, 3-4, 5-6, 7-8, 9-10, 11-12, 13-14, 15-16, 17-18, 19-20, 21-22, 23-24
+        if (address >= 1 && address <= 24) {
             return ((address - 1) / 2) * 2 + 1;
-        }
-        if (address >= 21 && address <= 24) {
-            return ((address - 21) / 2) * 2 + 21;
         }
         // Inverter registers start at 25
         if (address >= INVERTER_START_ADDRESS) {

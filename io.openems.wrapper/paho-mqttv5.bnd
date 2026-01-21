@@ -12,6 +12,7 @@ Fragment-Host: org.eclipse.paho.mqttv5.client
 Export-Package: \
 	org.eclipse.paho.mqttv5.client,\
 	org.eclipse.paho.mqttv5.client.internal,\
+	org.eclipse.paho.mqttv5.client.persist,\
 	org.eclipse.paho.mqttv5.client.util,\
 	org.eclipse.paho.mqttv5.client.spi,\
 	org.eclipse.paho.mqttv5.common,\

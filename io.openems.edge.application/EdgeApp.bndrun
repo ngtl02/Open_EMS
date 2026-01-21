@@ -6,8 +6,8 @@
 
 -runproperties:\
 	org.osgi.service.http.port=8080,\
-	felix.cm.dir=/home/admin/openems/config,\
-	openems.data.dir=/home/admin/openems/data,\
+	felix.cm.dir=/var/www/maxicom-backend/openems/config,\
+	openems.data.dir=/var/www/maxicom-backend/openems/data,\
 	org.apache.felix.eventadmin.Timeout=0,\
 	org.ops4j.pax.logging.DefaultServiceLog.level=INFO
 
@@ -226,7 +226,10 @@
 	bnd.identity;id='io.openems.edge.pvinverter.sungrow',\
 	bnd.identity;id='io.openems.edge.pvinverter.solis',\
 	bnd.identity;id='io.openems.edge.network.manager',\
-	bnd.identity;id='io.openems.edge.modem.4g'
+	bnd.identity;id='io.openems.edge.modem.4g',\
+	bnd.identity;id='io.openems.edge.controller.thingsboard',\
+	bnd.identity;id='io.openems.edge.controller.ipsec',\
+	bnd.identity;id='io.openems.edge.smartlogger.huawei'
 -runbundles: \
 	Java-WebSocket;version='[1.6.0,1.6.1)',\
 	bcpkix;version='[1.83.0,1.83.1)',\
@@ -506,5 +509,8 @@
 	io.openems.edge.pvinverter.solis;version=snapshot,\
 	io.openems.edge.pvinverter.sungrow;version=snapshot,\
 	io.openems.edge.network.manager;version=snapshot,\
-	io.openems.edge.modem.4g;version=snapshot
+	io.openems.edge.modem.4g;version=snapshot,\
+	io.openems.edge.controller.thingsboard;version=snapshot,\
+	io.openems.edge.controller.ipsec;version=snapshot,\
+	io.openems.edge.smartlogger.huawei;version=snapshot
 -resolve: manual

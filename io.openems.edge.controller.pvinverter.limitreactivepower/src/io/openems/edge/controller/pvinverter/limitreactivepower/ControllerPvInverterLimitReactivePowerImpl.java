@@ -1,7 +1,9 @@
 package io.openems.edge.controller.pvinverter.limitreactivepower;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -23,28 +25,20 @@ import io.openems.edge.meter.api.ElectricityMeter;
 import io.openems.edge.pvinverter.api.ManagedSymmetricPvInverter;
 
 /**
- * Controller for Reactive Power control of all PV inverters.
+ * Controller for Reactive Power (Q) control of all PV inverters.
  * 
  * <p>
- * This controller implements closed-loop control to make meter0's reactive power
- * match the target setpoint. The setpoint represents the desired grid reactive power.
- * 
- * <p>
- * Control Logic:
- * <ul>
- * <li>If meter0.reactivePower < setpoint: Need MORE Q → increase inverter Q limits</li>
- * <li>If meter0.reactivePower > setpoint: Need LESS Q → decrease inverter Q limits</li>
- * </ul>
+ * This controller implements closed-loop control to make the grid connection
+ * point (meter0) match the target setpoint from EVN or local configuration.
  * 
  * <p>
  * Features:
  * <ul>
- * <li>Auto-discovers all PV inverters (pvInverterX)</li>
- * <li>Reads setpoints from EVN controller when Q_OUT_ENABLED = true</li>
- * <li>Implements closed-loop control using meter0 feedback</li>
- * <li>Falls back to local fixed values when EVN control is disabled</li>
- * <li>Distributes reactive power proportionally based on inverter max Q rating</li>
- * <li>Supports both positive (inductive) and negative (capacitive) reactive power</li>
+ * <li>Detect which setpoint changed (Var or Percent)</li>
+ * <li>Convert Percent to Var: targetVar = percent/100 × totalSystemPower</li>
+ * <li>Dynamic inverter handling: only control working inverters</li>
+ * <li>Rate limiting to prevent oscillation</li>
+ * <li>Supports positive (inductive) and negative (capacitive) reactive power</li>
  * </ul>
  */
 @Designate(ocd = Config.class, factory = true)
@@ -63,19 +57,36 @@ public class ControllerPvInverterLimitReactivePowerImpl extends AbstractOpenemsC
     private static final String EVN_CONTROLLER_ID = "ctrlEvnModbus0";
     
     // Control parameters
-    private static final float Q_GAIN = 0.8f;  // Proportional gain for closed-loop
-    private static final int DEADBAND_VAR = 50; // Deadband in var
+    private static final int DEADBAND_VAR = 50;
+    private static final int MAX_ADJUSTMENT_PER_CYCLE_VAR = 10000; // Max 1kvar change per cycle
+    private static final float EPSILON = 0.01f; // For float comparison
 
     @Reference
     private ComponentManager componentManager;
 
     private Config config;
 
-    // Discovered inverters
-    private List<ManagedSymmetricPvInverter> inverters = new ArrayList<>();
+    // All discovered inverters
+    private List<ManagedSymmetricPvInverter> allInverters = new ArrayList<>();
     
-    // Auto-calculated total system reactive power capacity
+    // Total system reactive power capacity
     private int totalSystemPowerVar = 0;
+    
+    // Previous setpoints for change detection
+    private float lastEvnPercent = 0f;
+    private int lastEvnVar = 0;
+    
+    // Track which mode is active
+    private boolean usePercentMode = false;
+    
+    // Store previous limit per inverter ID (use Map for dynamic handling)
+    private Map<String, Integer> previousLimits = new HashMap<>();
+    
+    // Discovery debounce
+    private long lastDiscoveryTime = 0;
+    
+    // Flag to indicate if EVN has sent any command
+    private boolean evnCommandReceived = false;
 
     public ControllerPvInverterLimitReactivePowerImpl() {
         super(//
@@ -94,45 +105,67 @@ public class ControllerPvInverterLimitReactivePowerImpl extends AbstractOpenemsC
         this.discoverInverters();
 
         this.logInfo(this.log, "Activated with EVN controller: " + EVN_CONTROLLER_ID
-                + ", Found " + this.inverters.size() + " inverters"
+                + ", Found " + this.allInverters.size() + " inverters"
                 + ", Total system Q power: " + this.totalSystemPowerVar + "var");
     }
 
     private void discoverInverters() {
-        this.inverters.clear();
+        this.allInverters.clear();
 
         for (OpenemsComponent comp : this.componentManager.getAllComponents()) {
-            if (comp.id().startsWith(PVINVERTER_ID_PREFIX)
-                    && comp instanceof ManagedSymmetricPvInverter
+            if (comp instanceof ManagedSymmetricPvInverter
                     && comp.isEnabled()) {
-                this.inverters.add((ManagedSymmetricPvInverter) comp);
+                this.allInverters.add((ManagedSymmetricPvInverter) comp);
             }
         }
 
         // Sort by ID
-        this.inverters.sort((a, b) -> a.id().compareTo(b.id()));
+        this.allInverters.sort((a, b) -> a.id().compareTo(b.id()));
         
-        // Calculate total system reactive power from inverters
-        this.totalSystemPowerVar = this.inverters.stream()
+        // Calculate total system reactive power
+        this.totalSystemPowerVar = this.allInverters.stream()
                 .mapToInt(inv -> inv.getMaxReactivePower().orElse(0))
                 .sum();
         
         // If no max reactive power defined, estimate as 50% of apparent power
         if (this.totalSystemPowerVar == 0) {
-            this.totalSystemPowerVar = this.inverters.stream()
+            this.totalSystemPowerVar = this.allInverters.stream()
                     .mapToInt(inv -> (int)(inv.getMaxApparentPower().orElse(0) * 0.5))
                     .sum();
         }
+        
+        // Initialize previous limits for new inverters (default 0 for Q)
+        for (ManagedSymmetricPvInverter inv : this.allInverters) {
+            if (!this.previousLimits.containsKey(inv.id())) {
+                this.previousLimits.put(inv.id(), 0);
+            }
+        }
+    }
+
+    /**
+     * Get list of currently working inverters.
+     */
+    private List<ManagedSymmetricPvInverter> getWorkingInverters() {
+        List<ManagedSymmetricPvInverter> working = new ArrayList<>();
+        
+        for (ManagedSymmetricPvInverter inv : this.allInverters) {
+            // Check if inverter is responding (has valid power reading)
+            if (inv.getActivePower().isDefined()) {
+                working.add(inv);
+            } else {
+                this.logDebug(this.log, "Inverter " + inv.id() + " not responding, excluded from Q control");
+            }
+        }
+        
+        return working;
     }
 
     @Override
     @Deactivate
     protected void deactivate() {
-        // Reset all inverter limits (remove limits)
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
+        for (ManagedSymmetricPvInverter inv : this.allInverters) {
             try {
                 inv.setReactivePowerLimit(null);
-                inv.setReactivePowerLimitPercent(null);
             } catch (Exception e) {
                 this.logError(this.log, "Error resetting inverter " + inv.id() + ": " + e.getMessage());
             }
@@ -142,20 +175,24 @@ public class ControllerPvInverterLimitReactivePowerImpl extends AbstractOpenemsC
 
     @Override
     public void run() throws OpenemsNamedException {
-        // Refresh inverters occasionally
-        if (System.currentTimeMillis() % 30000 < 1000) {
+        // Refresh inverters periodically
+        if (System.currentTimeMillis() - this.lastDiscoveryTime > 30000) {
             this.discoverInverters();
+            this.lastDiscoveryTime = System.currentTimeMillis();
         }
 
-        if (this.inverters.isEmpty()) {
-            this.logWarn(this.log, "No PV inverters found");
+        // Get working inverters for this cycle
+        List<ManagedSymmetricPvInverter> workingInverters = this.getWorkingInverters();
+        
+        if (workingInverters.isEmpty()) {
+            this.logWarn(this.log, "No working PV inverters found");
             return;
         }
 
         // Determine target setpoint
         int targetGridPowerVar = 0;
-        int targetPercent = Integer.MIN_VALUE; // Use MIN_VALUE to indicate not using percent mode
         boolean evnEnabled = false;
+        boolean hasValidSetpoint = false;
 
         // Check EVN control
         if (this.config.allowEvnControl()) {
@@ -167,12 +204,34 @@ public class ControllerPvInverterLimitReactivePowerImpl extends AbstractOpenemsC
                     float evnPercent = evn.getQOutSetpointPercent().orElse(0f);
                     int evnVar = evn.getQOutSetpointVar().orElse(0);
 
-                    if (evnPercent != 0) {
-                        // Percentage mode from EVN (can be negative for capacitive)
-                        targetPercent = (int) evnPercent;
-                    } else {
-                        // Var mode from EVN - use closed-loop control
-                        targetGridPowerVar = evnVar;
+                    // Detect which setpoint changed
+                    boolean percentChanged = Math.abs(evnPercent - this.lastEvnPercent) > EPSILON;
+                    boolean varChanged = (evnVar != this.lastEvnVar);
+                    
+                    if (percentChanged || varChanged) {
+                        this.evnCommandReceived = true;
+                    }
+                    
+                    if (percentChanged && !varChanged) {
+                        this.usePercentMode = true;
+                    } else if (varChanged && !percentChanged) {
+                        this.usePercentMode = false;
+                    } else if (percentChanged && varChanged) {
+                        this.usePercentMode = (evnPercent != 0 && evnVar == 0);
+                    }
+                    
+                    this.lastEvnPercent = evnPercent;
+                    this.lastEvnVar = evnVar;
+                    
+                    // Check if we have valid setpoint (Q can be 0 as valid target)
+                    if (evnPercent != 0 || evnVar != 0 || this.evnCommandReceived) {
+                        hasValidSetpoint = true;
+                        
+                        if (this.usePercentMode) {
+                            targetGridPowerVar = (int) (evnPercent / 100f * this.totalSystemPowerVar);
+                        } else {
+                            targetGridPowerVar = evnVar;
+                        }
                     }
                 }
             } catch (OpenemsNamedException e) {
@@ -180,112 +239,85 @@ public class ControllerPvInverterLimitReactivePowerImpl extends AbstractOpenemsC
             }
         }
 
-        // Local control mode
-        if (!evnEnabled) {
+        // Local control mode (fallback)
+        if (!evnEnabled || !hasValidSetpoint) {
+            hasValidSetpoint = true;
             if (this.config.usePercent()) {
-                targetPercent = this.config.reactivePowerLimitPercent();
+                targetGridPowerVar = (int) (this.config.reactivePowerLimitPercent() / 100f * this.totalSystemPowerVar);
             } else {
                 targetGridPowerVar = this.config.reactivePowerLimit();
             }
         }
 
-        // Apply control
-        if (targetPercent != Integer.MIN_VALUE) {
-            // Percentage mode - apply directly to inverters
-            this.applyPercentageLimit(targetPercent);
-        } else {
-            // Var mode - closed-loop control with meter feedback
-            this.applyClosedLoopControl(targetGridPowerVar);
+        if (!hasValidSetpoint) {
+            return;
         }
-    }
 
-    /**
-     * Apply percentage limit to all inverters.
-     * In percentage mode, we directly set the percentage without meter feedback.
-     */
-    private void applyPercentageLimit(int percent) {
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
-            try {
-                inv.setReactivePowerLimitPercent(percent);
-            } catch (Exception e) {
-                this.logError(this.log, "Error setting Q limit for " + inv.id() + ": " + e.getMessage());
-            }
-        }
-        this.logDebug(this.log, "Applied Q " + percent + "% limit to " + this.inverters.size() + " inverters");
+        // Apply closed-loop control
+        this.applyClosedLoopControl(targetGridPowerVar, workingInverters);
     }
 
     /**
      * Closed-loop control to match grid reactive power to setpoint.
-     * Uses meter feedback to adjust inverter limits proportionally.
-     * 
-     * <p>
-     * The setpoint is the TARGET reactive power at meter0 (grid connection point).
-     * This controller adjusts inverter Q limits to make meter0.reactivePower match setpoint.
-     * 
-     * @param targetGridPowerVar Target grid reactive power at meter0 in var
-     *                          (positive = inductive/lagging, negative = capacitive/leading)
      */
-    private void applyClosedLoopControl(int targetGridPowerVar) throws OpenemsNamedException {
-        // Get actual grid reactive power from meter0
-        ElectricityMeter meter = this.componentManager.getComponent(DEFAULT_METER_ID);
+    private void applyClosedLoopControl(int targetGridPowerVar, List<ManagedSymmetricPvInverter> workingInverters) 
+            throws OpenemsNamedException {
+        
+        // Get actual grid reactive power from configured meter
+        ElectricityMeter meter = this.componentManager.getComponent(this.config.meter_id());
         int actualGridPowerVar = meter.getReactivePower().orElse(0);
 
-        // Calculate error: how much MORE reactive power we need at the grid point
-        // Positive error = need more Q = increase inverter Q output
-        // Negative error = need less Q = decrease inverter Q output
+        // Calculate error
         int errorVar = targetGridPowerVar - actualGridPowerVar;
 
-        // Check deadband - no action needed if within tolerance
+        // Check deadband
         if (Math.abs(errorVar) <= DEADBAND_VAR) {
-            this.logDebug(this.log, String.format(
-                    "Q within deadband: target=%dvar, actual=%dvar, error=%dvar",
-                    targetGridPowerVar, actualGridPowerVar, errorVar));
             return;
         }
 
-        // Get current total inverter reactive power
-        int currentTotalReactivePowerVar = 0;
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
-            currentTotalReactivePowerVar += inv.getReactivePower().orElse(0);
+        // Calculate adjustment per inverter
+        int numWorkingInverters = workingInverters.size();
+        if (numWorkingInverters == 0) {
+            return;
         }
-
-        // Calculate new total limit based on error
-        int adjustmentVar = (int) (errorVar * Q_GAIN);
-        int newTotalLimitVar = currentTotalReactivePowerVar + adjustmentVar;
         
-        // Clamp to valid range [-totalSystemPowerVar, +totalSystemPowerVar]
-        // Reactive power can be negative (capacitive) or positive (inductive)
-        newTotalLimitVar = Math.max(-this.totalSystemPowerVar, Math.min(newTotalLimitVar, this.totalSystemPowerVar));
+        int adjustmentPerInverterVar = errorVar / numWorkingInverters;
+        
+        // Apply rate limiting
+        adjustmentPerInverterVar = Math.max(-MAX_ADJUSTMENT_PER_CYCLE_VAR, 
+                Math.min(adjustmentPerInverterVar, MAX_ADJUSTMENT_PER_CYCLE_VAR));
 
-        // Distribute to each inverter proportionally based on max reactive power rating
-        for (ManagedSymmetricPvInverter inv : this.inverters) {
+        // Apply to each working inverter
+        for (ManagedSymmetricPvInverter inv : workingInverters) {
+            // Get max Q capacity
             int maxQ = inv.getMaxReactivePower().orElse(0);
             if (maxQ == 0) {
-                // Estimate as 50% of max apparent power if not defined
                 maxQ = (int)(inv.getMaxApparentPower().orElse(0) * 0.5);
             }
             if (maxQ <= 0) {
-                continue; // Skip if still no max Q defined
+                continue;
             }
             
-            // Calculate ratio based on max reactive power
-            float ratio = (this.totalSystemPowerVar > 0) 
-                    ? (float) maxQ / this.totalSystemPowerVar 
-                    : 1.0f / this.inverters.size();
+            // Get previous limit (default 0 for Q)
+            int prevLimit = this.previousLimits.getOrDefault(inv.id(), 0);
             
-            // Calculate new limit for this inverter
-            int newLimit = (int) (newTotalLimitVar * ratio);
-            newLimit = Math.max(-maxQ, Math.min(newLimit, maxQ)); // Clamp to valid range
+            // Calculate new limit
+            int newLimit = prevLimit + adjustmentPerInverterVar;
+            
+            // Clamp to valid range [-maxQ, +maxQ]
+            newLimit = Math.max(-maxQ, Math.min(newLimit, maxQ));
 
             try {
                 inv.setReactivePowerLimit(newLimit);
+                this.previousLimits.put(inv.id(), newLimit);
             } catch (Exception e) {
                 this.logError(this.log, "Error setting Q limit for " + inv.id() + ": " + e.getMessage());
             }
         }
 
         this.logDebug(this.log, String.format(
-                "Q Closed-loop: target=%dvar, actual=%dvar, error=%dvar, currentQ=%dvar, newLimit=%dvar",
-                targetGridPowerVar, actualGridPowerVar, errorVar, currentTotalReactivePowerVar, newTotalLimitVar));
+                "Q Control: target=%dvar, actual=%dvar, error=%dvar, working=%d/%d, adj/inv=%dvar",
+                targetGridPowerVar, actualGridPowerVar, errorVar,
+                numWorkingInverters, this.allInverters.size(), adjustmentPerInverterVar));
     }
 }
