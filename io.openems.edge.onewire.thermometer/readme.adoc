@@ -1,6 +1,0 @@
-= OneWire Thermometer
-
-Implemented Natures::
-- Thermometer
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.onewire.thermometer[Source Code icon:github[]]

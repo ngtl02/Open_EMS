@@ -1,8 +1,0 @@
-= Electric Vehicle Supply Equipment (EVSE) Api
-
-APIs for
-
-- Electric Vehicle
-- Charge Point
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evse.api[Source Code icon:github[]]

@@ -1,3 +1,0 @@
-= EVSE Charge-Point Heidelberg Connect
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evse.chargepoint.heidelberg[Source Code icon:github[]]

@@ -1,3 +1,0 @@
-= Controller
-
-A Controller; see the Controller chapter for details.

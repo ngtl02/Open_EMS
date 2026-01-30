@@ -1,3 +1,0 @@
-= Battery
-
-A battery that is connected to a battery inverter.

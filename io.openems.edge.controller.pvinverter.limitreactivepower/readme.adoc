@@ -1,3 +1,0 @@
-= Controller PV-Inverter Limit Reactive Power
-
-Defines a fixed reactive power (var) or percentage (%) limitation to PV inverter.

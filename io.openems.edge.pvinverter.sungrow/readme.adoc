@@ -1,3 +1,0 @@
-= io.openems.edge.pvinverter.sungrow
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.pvinverter.sungrow[Source Code icon:github[]]

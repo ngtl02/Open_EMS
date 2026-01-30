@@ -1,8 +1,0 @@
-= SolarEdge PV Inverter + Grid-Meter
-
-Implementation of the SolarEdge PV inverters.
-
-Implemented Natures:
-- ElectricityMeter
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.solaredge[Source Code icon:github[]]

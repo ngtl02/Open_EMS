@@ -1,3 +1,0 @@
-= io.openems.edge.network.manager
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.network.manager[Source Code icon:github[]]

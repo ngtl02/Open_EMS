@@ -1,5 +1,0 @@
-= Emergency Power Switch
-
-This implements a Emergency Power Switch (German: Netztrennstelle).
-
-https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.iooffgridswitch[Source Code icon:github[]]
